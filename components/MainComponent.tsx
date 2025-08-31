@@ -20,8 +20,117 @@ import PostsOutput from "./PostsOutput";
 import { PERSONAS, LENGTHS, POST_COUNTS, LANGUAGES } from "../lib/constants";
 import { cn } from "../lib/utils";
 
+function GridWrapper({
+  colsMobile = 1,
+  colsSm,
+  colsMd,
+  colsLg,
+  gap = 6,
+  children,
+}: {
+  colsMobile?: number;
+  colsSm?: number;
+  colsMd?: number;
+  colsLg?: number;
+  gap?: number;
+  children: React.ReactNode;
+}) {
+  // Build responsive grid classes dynamically
+  let className = `grid grid-cols-${colsMobile} gap-${gap}`;
+
+  if (colsSm) className += ` sm:grid-cols-${colsSm}`;
+  if (colsMd) className += ` md:grid-cols-${colsMd}`;
+  if (colsLg) className += ` lg:grid-cols-${colsLg}`;
+
+  return <div className={className}>{children}</div>;
+}
+
+function InputFields({
+  fields,
+  control,
+}: {
+  fields: {
+    name: string;
+    label: string;
+    placeholder?: string;
+    required?: boolean;
+  }[];
+  control: any;
+}) {
+  return (
+    <GridWrapper colsMobile={1} colsSm={2} gap={4}>
+      {fields.map(({ name, label, placeholder, required }) => (
+        <FormField
+          key={name}
+          control={control}
+          name={name as any}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className='text-base font-medium'>
+                {label} {required && <span className='text-red-500'>*</span>}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder={placeholder}
+                  required={required}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      ))}
+    </GridWrapper>
+  );
+}
+
+function SelectFields({
+  fields,
+  control,
+}: {
+  fields: { name: string; label: string; items: any[] }[];
+  control: any;
+}) {
+  return (
+    <GridWrapper colsMobile={2} colsMd={4} gap={4}>
+      {fields.map(({ name, label, items }) => (
+        <SelectField
+          key={name}
+          control={control}
+          name={name}
+          label={label}
+          items={items}
+        />
+      ))}
+    </GridWrapper>
+  );
+}
+
+function ToggleFields({
+  fields,
+  control,
+}: {
+  fields: { name: string; label: string; desc: string }[];
+  control: any;
+}) {
+  return (
+    <GridWrapper colsMobile={2} colsSm={4} gap={4}>
+      {fields.map(({ name, label, desc }) => (
+        <ToggleItem
+          key={name}
+          control={control}
+          name={name}
+          label={label}
+          desc={desc}
+        />
+      ))}
+    </GridWrapper>
+  );
+}
+
 export default function MainComponent(): React.JSX.Element {
-  const { form, submitHandler, posts } = useFormHandler();
+  const { form, submitHandler, posts, meta } = useFormHandler();
   const { control, watch, setValue, formState } = form;
   const { isSubmitting, errors } = formState;
 
@@ -43,41 +152,84 @@ export default function MainComponent(): React.JSX.Element {
     setValue("seed", v);
   }
 
+  // Input fields config
+  const inputFields = [
+    {
+      name: "topic",
+      label: "Topic",
+      placeholder: "e.g. Cold-start strategies for marketplaces",
+      required: true,
+    },
+    {
+      name: "audience",
+      label: "Audience",
+      placeholder: "e.g. Founders, PMs, Job seekers",
+    },
+  ];
+
+  // Select fields config
+  const selectFields = [
+    { name: "tone", label: "Tone", items: PERSONAS },
+    { name: "length", label: "Post Length", items: LENGTHS },
+    { name: "postCount", label: "Posts", items: POST_COUNTS },
+    { name: "language", label: "Language", items: LANGUAGES },
+  ];
+
+  // Toggle fields config
+  const toggleFields = [
+    {
+      name: "allowEmojis",
+      label: "Use Emojis",
+      desc: "Sprinkle relevant emojis.",
+    },
+    {
+      name: "includeLinks",
+      label: "Include Links",
+      desc: "Append helpful links.",
+    },
+    {
+      name: "addHashtags",
+      label: "Add Hashtags",
+      desc: "Auto-extract topic tags.",
+    },
+    {
+      name: "addCTA",
+      label: "Add CTA",
+      desc: "Prompt readers to engage.",
+    },
+  ];
+
   return (
     <MotionConfig reducedMotion='user'>
       <main
-        className='min-h-screen p-4 md:p-5'
-        aria-label='Main content. AI LinkedIn Post Generator'
+        className='min-h-screen p-2 sm:p-4 md:p-6'
+        aria-label='Main content'
       >
-        {/* Header */}
-        <header className='max-w-4xl mx-auto mb-10 text-center'>
+        <header className='max-w-4xl mx-auto mb-6 sm:mb-8 text-center'>
           <motion.h1
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className='text-4xl md:text-6xl font-extrabold tracking-tight'
+            transition={{ duration: 0.45 }}
+            className='text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight'
           >
             AI LinkedIn Post Generator
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className='text-lg md:text-xl text-muted-foreground mt-3 max-w-2xl mx-auto'
+            transition={{ delay: 0.15 }}
+            className='text-lg text-muted-foreground mt-3 max-w-2xl mx-auto'
             id='form-desc'
           >
             Instantly craft LinkedIn drafts with precise control.
-            <span className="italic ">
-              <br />
+            <span className='italic block'>
               Polished, fast, and built for creators who care about quality.
             </span>
           </motion.p>
         </header>
 
-        {/* Content grid */}
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-7xl mx-auto'>
-          {/* Left column: form */}
-          <section className='lg:col-span-2'>
+        <div className='flex flex-col lg:grid lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto'>
+          <section className='order-2 lg:order-1 lg:col-span-2 mb-8 lg:mb-0'>
             <p
               ref={ariaStatusRef}
               aria-live='polite'
@@ -89,131 +241,36 @@ export default function MainComponent(): React.JSX.Element {
 
             <motion.div
               className={cn(
-                "w-full bg-white dark:bg-neutral-900 shadow-xl rounded-3xl p-8 md:p-12 border border-gray-200 dark:border-neutral-800"
+                "w-full bg-white dark:bg-neutral-900 shadow-xl rounded-3xl p-6 sm:p-8 md:p-12 border border-gray-200 dark:border-neutral-800"
               )}
               initial={
-                shouldReduceMotion ? { opacity: 0.9 } : { opacity: 0, y: 30 }
+                shouldReduceMotion ? { opacity: 0.95 } : { opacity: 0, y: 20 }
               }
               animate={
                 shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
               }
-              transition={{ duration: shouldReduceMotion ? 0.25 : 0.6 }}
+              transition={{ duration: shouldReduceMotion ? 0.2 : 0.5 }}
               aria-label='Post generation form'
             >
               <Form {...form}>
                 <form
                   onSubmit={submitHandler}
-                  className='space-y-12'
+                  className='space-y-8'
                   aria-describedby='form-desc'
                 >
-                  {/* Topic + Audience */}
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                    <FormField
-                      control={control}
-                      name='topic'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className='text-base font-medium'>
-                            Topic <span className='text-red-500'>*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder='e.g. Cold-start strategies for marketplaces'
-                              required
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={control}
-                      name='audience'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className='text-base font-medium'>
-                            Audience
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder='e.g. Founders, PMs, Job seekers'
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <InputFields fields={inputFields} control={control} />
+                  <SelectFields fields={selectFields} control={control} />
+                  <ToggleFields fields={toggleFields} control={control} />
 
-                  {/* Core Selectors */}
-                  <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
-                    <SelectField
-                      control={control}
-                      name='tone'
-                      label='Tone'
-                      items={PERSONAS}
-                    />
-                    <SelectField
-                      control={control}
-                      name='length'
-                      label='Post Length'
-                      items={LENGTHS}
-                    />
-                    <SelectField
-                      control={control}
-                      name='postCount'
-                      label='Posts'
-                      items={POST_COUNTS}
-                    />
-                    <SelectField
-                      control={control}
-                      name='language'
-                      label='Language'
-                      items={LANGUAGES}
-                    />
-                  </div>
-
-                  {/* Toggles */}
-                  <div className='grid grid-cols-2 lg:grid-cols-4 gap-6'>
-                    <ToggleItem
-                      control={control}
-                      name='allowEmojis'
-                      label='Use Emojis'
-                      desc='Sprinkle relevant emojis.'
-                    />
-                    <ToggleItem
-                      control={control}
-                      name='includeLinks'
-                      label='Include Links'
-                      desc='Append helpful links.'
-                    />
-                    <ToggleItem
-                      control={control}
-                      name='addHashtags'
-                      label='Add Hashtags'
-                      desc='Auto-extract topic tags.'
-                    />
-                    <ToggleItem
-                      control={control}
-                      name='addCTA'
-                      label='Add CTA'
-                      desc='Prompt readers to engage.'
-                    />
-                  </div>
-
-                  {/* Advanced Settings */}
                   <AdvancedSettings
                     control={control}
                     addHashtags={addHashtags}
                     setSeedValue={setSeedValue}
                   />
 
-                  {/* Submit */}
                   <Button
                     type='submit'
-                    className='w-full text-lg font-semibold py-6 rounded-xl'
+                    className='w-full text-base font-semibold py-3 rounded-xl'
                     disabled={isSubmitting}
                     aria-busy={isSubmitting}
                   >
@@ -221,7 +278,7 @@ export default function MainComponent(): React.JSX.Element {
                       "Generating…"
                     ) : (
                       <>
-                        Generate Posts
+                        Generate Posts{" "}
                         <span aria-hidden='true' role='img' className='ml-2'>
                           🚀
                         </span>
@@ -233,18 +290,47 @@ export default function MainComponent(): React.JSX.Element {
             </motion.div>
           </section>
 
-          {/* Right column: results */}
+          {/* Output Section */}
           <motion.section
             initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: posts.length > 0 ? 1 : 0.5, x: 0 }}
+            animate={{ opacity: posts.length > 0 ? 1 : 0.6, x: 0 }}
             transition={{ duration: 0.4 }}
             aria-label='Generated LinkedIn posts'
-            className='lg:col-span-1'
+            className='order-1 lg:order-2 mb-8 lg:mb-0 lg:col-span-1'
           >
+            {meta && (
+              <div className='mb-4 rounded-lg px-4 py-2 bg-gray-50 dark:bg-neutral-800 border border-gray-100 dark:border-neutral-700 text-sm text-gray-700 dark:text-gray-200 flex items-center justify-between gap-3'>
+                <div className='flex items-center gap-4'>
+                  <span>
+                    🧾 <strong>{meta.tokens ?? "—"}</strong> tokens
+                  </span>
+                  <span>
+                    ⏱{" "}
+                    <strong>
+                      {meta.latencyMs
+                        ? `${(meta.latencyMs / 1000).toFixed(2)}s`
+                        : "—"}
+                    </strong>
+                  </span>
+                  <span>
+                    💲{" "}
+                    <strong>
+                      {meta.costUSD !== undefined
+                        ? `$${meta.costUSD.toFixed(4)}`
+                        : "—"}
+                    </strong>
+                  </span>
+                </div>
+                <div className='text-xs text-muted-foreground'>
+                  {meta.model ? `model: ${meta.model}` : null}
+                </div>
+              </div>
+            )}
+
             {posts.length > 0 ? (
-              <PostsOutput posts={posts} />
+              <PostsOutput posts={posts} meta={meta} />
             ) : (
-              <div className='h-full flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-2xl  w-full text-center text-muted-foreground'>
+              <div className='h-full flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-2xl w-full text-center text-muted-foreground p-8'>
                 Your posts will appear here after generation.
               </div>
             )}

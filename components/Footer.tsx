@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Github, Linkedin, Twitter, XIcon } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Github, Linkedin, Twitter } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Footer = () => {
@@ -17,6 +17,26 @@ const Footer = () => {
     { icon: <Linkedin size={18} />, href: "https://linkedin.com/in/ashusnapx" },
     { icon: <Twitter size={18} />, href: "https://twitter.com/ashusnapx" },
   ];
+
+  // ✅ Health check state
+  const [health, setHealth] = useState<"loading" | "ok" | "error">("loading");
+
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const res = await fetch("/api/health"); // 🔥 fixed
+        if (res.ok) {
+          setHealth("ok");
+        } else {
+          setHealth("error");
+        }
+      } catch (err) {
+        setHealth("error");
+      }
+    };
+
+    checkHealth();
+  }, []);
 
   return (
     <motion.footer
@@ -57,7 +77,7 @@ const Footer = () => {
             ))}
           </div>
 
-          {/* Socials */}
+          {/* Socials + Health */}
           <div>
             <h3 className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
               Connect
@@ -74,6 +94,25 @@ const Footer = () => {
                   {s.icon}
                 </a>
               ))}
+            </div>
+
+            {/* ✅ Health status */}
+            <div className='mt-4 text-sm flex items-center space-x-2'>
+              {health === "loading" && (
+                <span className='text-gray-500'>Checking health...</span>
+              )}
+              {health === "ok" && (
+                <span className='flex items-center text-green-600 font-medium'>
+                  <span className='w-2 h-2 rounded-full bg-green-600 mr-2'></span>
+                  Healthy
+                </span>
+              )}
+              {health === "error" && (
+                <span className='flex items-center text-red-600 font-medium'>
+                  <span className='w-2 h-2 rounded-full bg-red-600 mr-2'></span>
+                  Down
+                </span>
+              )}
             </div>
           </div>
         </div>

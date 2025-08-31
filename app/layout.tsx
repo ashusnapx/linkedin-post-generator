@@ -85,8 +85,8 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className='flex flex-col min-h-screen bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 transition-colors grainy antialiased'>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+      <body className='flex flex-col min-h-screen bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 transition-colors grainy'>
+        <ThemeProvider attribute='class' defaultTheme='dark' enableSystem>
           {/* Sticky Navbar */}
           <Navbar />
 

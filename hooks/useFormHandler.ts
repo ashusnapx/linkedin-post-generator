@@ -6,13 +6,15 @@ import { schema, FormValues } from "../lib/schema";
 import { toast } from "sonner";
 
 /**
- * Hook that encapsulates form setup + submit logic.
- *
- * Exposes:
- *  - react-hook-form methods
- *  - submit handler bound to API
- *  - posts state (generated output)
+ * Meta info returned or computed after generation.
  */
+export type GenerationMeta = {
+  tokens?: number;
+  latencyMs?: number;
+  costUSD?: number;
+  model?: string;
+};
+
 export function useFormHandler() {
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -42,15 +44,30 @@ export function useFormHandler() {
     []
   );
 
+  const [meta, setMeta] = React.useState<GenerationMeta | null>(null);
+
   /**
-   * Submitter wired to /api/generate-posts
-   * kept outside of JSX per requirement (no inline functions).
+   * Helper: compute a fallback cost estimate using a public env var
+   * NEXT_PUBLIC_COST_PER_1K_TOKENS (USD per 1k tokens).
+   * Default used if env var is missing: 0.03 USD / 1k tokens (adjust as needed).
    */
+  function computeCostFromTokens(tokens?: number) {
+    if (tokens === undefined) return undefined;
+    const defaultPer1k = 0.03; // placeholder; replace via env var
+    const per1k = parseFloat(
+      (process.env.NEXT_PUBLIC_COST_PER_1K_TOKENS ?? defaultPer1k).toString()
+    );
+    const cost = (tokens / 1000) * per1k;
+    // round to 6 decimals for display
+    return Math.round(cost * 1_000_000) / 1_000_000;
+  }
+
   async function onSubmit(values: FormValues) {
     try {
       toast.loading("Generating posts…", { id: "gen" });
-      // debug
-      // console.log("📤 Sending values:", values);
+
+      // measure latency client-side
+      const t0 = performance.now();
 
       const res = await fetch("/api/generate-posts", {
         method: "POST",
@@ -58,17 +75,39 @@ export function useFormHandler() {
         body: JSON.stringify(values),
       });
 
+      const t1 = performance.now();
+      const latencyMs = Math.round(t1 - t0);
+
       const json = await res.json();
 
       if (!res.ok) throw new Error(json.error || "Failed to generate posts");
 
+      // success
       toast.success("Posts generated successfully 🚀", { id: "gen" });
 
+      // posts array expected at json.posts
       setPosts(json.posts || []);
+
+      // prefer meta from server: json.meta or top-level fields json.tokens, json.costUSD
+      const serverMeta = json.meta ?? {};
+      const tokens =
+        serverMeta.tokens ?? json.tokens ?? serverMeta.token_usage ?? undefined;
+      const costUSD = serverMeta.costUSD ?? json.costUSD ?? undefined;
+      const model = serverMeta.model ?? json.model ?? undefined;
+
+      // compute fallback cost if tokens exist but costUSD missing
+      const computedCost =
+        costUSD !== undefined ? costUSD : computeCostFromTokens(tokens);
+
+      setMeta({
+        tokens,
+        latencyMs,
+        costUSD: computedCost,
+        model,
+      });
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Something went wrong. Try again.";
-      // console.error("❌ Client error:", err);
       toast.error(message, { id: "gen" });
     }
   }
@@ -80,5 +119,7 @@ export function useFormHandler() {
     submitHandler,
     posts,
     setPosts,
+    meta, // NEW — meta with tokens / latency / cost
+    setMeta,
   };
 }
