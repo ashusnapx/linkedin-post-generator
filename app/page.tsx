@@ -1,10 +1,9 @@
-import Hero from "@/components/Hero";
-import Navbar from "@/components/Navbar";
+import MainComponent from "@/components/MainComponent";
 
 export default function Home() {
   return (
-    <>
-      <Hero />
-    </>
+    <div className='p-2'>
+      <MainComponent/>
+    </div>
   );
 }

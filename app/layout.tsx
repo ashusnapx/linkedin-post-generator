@@ -85,13 +85,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className='flex flex-col min-h-screen bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 transition-colors'>
+      <body className='flex flex-col min-h-screen bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 transition-colors grainy antialiased'>
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
           {/* Sticky Navbar */}
           <Navbar />
 
           {/* Main content -> padding top equal to navbar height */}
-          <main className='flex-1 container mx-auto px-4 py-8 pt-20'>
+          <main className='flex-1 container mx-auto px-4 py-4 pt-20'>
             {children}
           </main>
           <Toaster />
