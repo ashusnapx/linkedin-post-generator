@@ -1,4 +1,4 @@
-// lib/constants.ts
+
 export const PERSONAS = [
   "Startup Founder",
   "Career Coach",
