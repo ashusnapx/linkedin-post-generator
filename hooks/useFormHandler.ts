@@ -99,21 +99,31 @@ export function useFormHandler() {
 
       toast.success("Posts generated successfully 🚀", { id: "gen" });
 
-      // ✅ structured posts directly set kar do
-      setPosts(
-        Array.isArray(json.posts)
-          ? json.posts.map((p: any, idx: number) => ({
-              id: p.id ?? idx + 1,
-              content: p.content ?? "",
-            }))
-          : Array.isArray(json)
-          ? json.map((p: any, idx: number) => ({
-              id: p.id ?? idx + 1,
-              content: p.content ?? "",
-            }))
-          : []
-      );
+      // ✅ Handle structured posts from backend response
+      const postsData = json.posts || json || [];
+      const normalizedPosts = Array.isArray(postsData)
+        ? postsData.map((p: any, idx: number) => {
+            // Handle both structured and simple string formats
+            if (typeof p === "string") {
+              return {
+                id: idx + 1,
+                content: p,
+              };
+            }
 
+            // Handle structured post objects
+            return {
+              id: p.id ?? idx + 1,
+              content: p.content ?? "",
+              hashtags: p.hashtags,
+              cta: p.cta,
+              citations: p.citations,
+              flags: p.flags,
+            };
+          })
+        : [];
+
+      setPosts(normalizedPosts);
 
       const serverMeta = json.meta ?? {};
       let tokens = serverMeta.tokens ?? json.tokens ?? serverMeta.token_usage;

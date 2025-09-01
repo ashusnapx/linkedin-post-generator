@@ -107,16 +107,14 @@ export default function PostsOutput({
 
       {/* Modal for expanded post view */}
       <Dialog open={!!selectedPost} onOpenChange={() => setSelectedPost(null)}>
-        <DialogContent className='max-w-2xl'>
+        <DialogContent className='max-w-2xl max-h-[80vh] overflow-y-auto'>
           <DialogHeader>
             <DialogTitle>Post Details</DialogTitle>
           </DialogHeader>
           {selectedPost && (
             <div className='space-y-4'>
               {/* Post content */}
-              <ReactMarkdown className='prose dark:prose-invert'>
-                {selectedPost.content}
-              </ReactMarkdown>
+              <ReactMarkdown>{selectedPost.content}</ReactMarkdown>
 
               {/* Hashtags */}
               {selectedPost.hashtags?.length > 0 && (

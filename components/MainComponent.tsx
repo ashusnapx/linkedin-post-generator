@@ -43,22 +43,6 @@ const pastel = {
   blue: "#a2d5f2",
 };
 
-// 🔒 Guard: normalize posts into safe string[]
-function normalizePosts(posts: any): string[] {
-  if (!posts) return [];
-  if (Array.isArray(posts)) {
-    return posts.filter((p) => typeof p === "string");
-  }
-  if (typeof posts === "object" && posts.output) {
-    if (Array.isArray(posts.output)) {
-      return posts.output.filter((p) => typeof p === "string");
-    }
-    return [String(posts.output)];
-  }
-  if (typeof posts === "string") return [posts];
-  return [];
-}
-
 function GridWrapper({
   colsMobile = 1,
   colsSm,
@@ -167,8 +151,6 @@ export default function MainComponent(): React.JSX.Element {
   const ariaStatusRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const [statusMessage, setStatusMessage] = useState<React.ReactNode>("");
-
-  const safePosts = normalizePosts(posts);
 
   useEffect(() => {
     if (isSubmitting) {
@@ -373,7 +355,7 @@ export default function MainComponent(): React.JSX.Element {
           {/* Output */}
           <motion.section
             initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: safePosts.length > 0 ? 1 : 0.6, x: 0 }}
+            animate={{ opacity: posts.length > 0 ? 1 : 0.6, x: 0 }}
             transition={{ duration: 0.4 }}
             aria-label='Generated LinkedIn posts'
             className='order-1 lg:order-2 mb-8 lg:mb-0 lg:col-span-1'
@@ -415,9 +397,9 @@ export default function MainComponent(): React.JSX.Element {
                 </div>
               </div>
             )}
-            {safePosts.length > 0 ? (
+            {posts.length > 0 ? (
               <PostsOutput
-                posts={posts} // ✅ normalized
+                posts={posts}
                 tokens={meta?.tokens}
                 latency={meta?.latencyMs}
                 cost={meta?.costUSD}
