@@ -34,7 +34,7 @@ const DEFAULT_VALUES: FormValues = {
   topic: "",
   tone: "Startup Founder",
   audience: "",
-  length: "medium",
+  length: "short",
   postCount: "3",
   addHashtags: true,
   addCTA: true,

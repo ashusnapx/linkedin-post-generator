@@ -60,11 +60,11 @@ export default function PostsOutput({
   return (
     <div className='w-full max-w-4xl mx-auto'>
       {/* Meta info header */}
-      <div className='flex flex-wrap gap-3 mb-4 text-sm text-gray-600 dark:text-gray-300'>
+      {/* <div className='flex flex-wrap gap-3 mb-4 text-sm text-gray-600 dark:text-gray-300'>
         {tokens !== undefined && <span>🧩 Tokens: {tokens}</span>}
         {latency !== undefined && <span>⚡ Latency: {latency}ms</span>}
         {cost !== undefined && <span>💰 Cost: ${cost.toFixed(4)}</span>}
-      </div>
+      </div> */}
 
       {/* Carousel with posts */}
       <Carousel className='w-full'>
