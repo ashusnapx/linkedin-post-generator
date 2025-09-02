@@ -38,6 +38,7 @@ export interface Draft {
 export interface GeneratePostsResult {
   posts: Draft[];
   meta: {
+    cost: null;
     model: string;
     tokens: number;
     costUSD: number;

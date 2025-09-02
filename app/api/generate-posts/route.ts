@@ -5,10 +5,6 @@ import { handleGeneratePosts } from "@/src/services/handlerService";
 import { validateRequestBody } from "@/src/utils/validation";
 import { logger } from "@/src/lib/logger";
 
-/**
- * Entry point for POST /api/generate-posts
- * Thin wrapper: validate -> get model -> delegate to handler -> return response
- */
 export async function POST(req: Request) {
   const startTime = Date.now();
   try {
@@ -20,15 +16,19 @@ export async function POST(req: Request) {
     }
 
     const model = getModel(); // throws if missing API key
-
     const result = await handleGeneratePosts(body, model);
 
     const latencyMs = Date.now() - startTime;
+
     return NextResponse.json({
-      ...result,
-      meta: { ...result.meta, latencyMs },
+      posts: result.posts ?? [],
+      meta: {
+        tokens: result.meta?.tokens ?? null,
+        cost: result.meta?.cost ?? null,
+        latencyMs,
+      },
     });
-  } catch (err: unknown) {
+  } catch (err: any) {
     logger.error("Route error", err);
     return NextResponse.json(
       { error: "Server error", details: err?.message ?? String(err) },

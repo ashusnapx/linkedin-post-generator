@@ -21,13 +21,28 @@ export default function PostCard({
   onCopy,
 }: PostCardProps) {
   return (
-    <Card className='h-full rounded-2xl shadow-md bg-white dark:bg-neutral-900 flex flex-col'>
+    <Card
+      className='h-full rounded-2xl shadow-md bg-white dark:bg-neutral-900 flex flex-col focus-within:ring-2 focus-within:ring-indigo-500 outline-none'
+      tabIndex={-1}
+      aria-label={`Post number ${index + 1}`}
+    >
       <CardContent className='flex flex-col p-4 flex-grow justify-between'>
         <div>
-          <div className='text-xs text-gray-400 mb-2'>Post #{index + 1}</div>
+          <div className='text-xs text-gray-400 mb-2 select-none'>
+            Post #{index + 1}
+          </div>
           <div
-            className='prose prose-sm dark:prose-invert line-clamp-6 cursor-pointer'
+            role='button'
+            tabIndex={0}
             onClick={() => onSelect(post)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onSelect(post);
+              }
+            }}
+            className='prose prose-sm dark:prose-invert line-clamp-6 cursor-pointer select-text'
+            aria-label={`Select post number ${index + 1}`}
           >
             <ReactMarkdown>{post.content}</ReactMarkdown>
           </div>
@@ -36,9 +51,11 @@ export default function PostCard({
           <Button
             size='sm'
             variant='outline'
+            aria-label={`Copy content of post number ${index + 1}`}
             onClick={() => onCopy(post.content)}
           >
-            <Copy className='w-4 h-4 mr-1' /> Copy
+            <Copy className='w-4 h-4 mr-1' aria-hidden='true' />
+            Copy
           </Button>
         </div>
       </CardContent>
