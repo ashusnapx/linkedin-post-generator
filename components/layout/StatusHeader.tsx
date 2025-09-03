@@ -1,33 +1,30 @@
 import React from "react";
-import { motion, Variants } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import {
+  MotionConfig,
+  motion,
+  useReducedMotion,
+  Variants,
+} from "framer-motion";
 
-// ✅ Shared transition (with cubic-bezier easing)
-const baseTransition = {
-  ease: [0.16, 1, 0.3, 1] as never,
-  duration: 0.5,
-};
+/* Accessible motion defaults: respect OS setting */
+const baseTransition = { ease: [0.16, 1, 0.3, 1] as never, duration: 0.5 };
 
 const containerVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: {
+  visible: (prefersReduced: boolean) => ({
     opacity: 1,
-    y: 0,
-    transition: {
-      ...baseTransition,
-      duration: 0.6,
-      staggerChildren: 0.3,
-    },
-  },
+    y: prefersReduced ? 0 : 0,
+    transition: { ...baseTransition, duration: 0.6, staggerChildren: 0.2 },
+  }),
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 15 },
-  visible: {
+  hidden: { opacity: 0, y: 12 },
+  visible: (prefersReduced: boolean) => ({
     opacity: 1,
-    y: 0,
+    y: prefersReduced ? 0 : 0,
     transition: baseTransition,
-  },
+  }),
 };
 
 export function StatusHeader({
@@ -37,68 +34,100 @@ export function StatusHeader({
   statusMessage: React.ReactNode;
   ariaStatusRef: React.RefObject<HTMLDivElement>;
 }) {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <header
-      role='banner'
-      className='max-w-5xl mx-auto px-6 text-center select-none rounded-xl 
-                 bg-gray-50 dark:bg-transparent transition-colors duration-300'
-    >
-      <motion.div
-        className='flex flex-col items-center gap-4'
-        variants={containerVariants}
-        initial='hidden'
-        animate='visible'
+    <MotionConfig reducedMotion='user'>
+      <header
+        role='banner'
+        className='relative overflow-hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 text-center rounded-2xl max-h-72 md:max-h-66
+               bg-white/70 dark:bg-white/5 backdrop-blur-md ring-1 ring-black/5 dark:ring-white/10
+               transition-colors duration-300 mb-10'
+        aria-label='AI LinkedIn Post Generator header'
       >
-        {/* Heading */}
-        <motion.div variants={itemVariants}>
-          <div
-            className='inline-flex items-center gap-3'
-            aria-label='Sparkles icon decorating AI LinkedIn Post Generator heading'
-          >
-            <Sparkles
-              size={48}
-              className='drop-shadow-lg text-purple-400 dark:text-pink-400'
-              aria-hidden='true'
-              focusable='false'
-              style={{
-                filter:
-                  "drop-shadow(0 0 4px rgba(162,155,254,0.5)) drop-shadow(0 0 8px rgba(255,107,156,0.3))",
-              }}
-            />
-            <h1
-              tabIndex={-1}
-              className='font-extrabold text-4xl md:text-5xl lg:text-6xl 
-                         text-gray-900 dark:text-gray-100 leading-tight'
-            >
-              AI LinkedIn Post Generator
-            </h1>
-          </div>
-        </motion.div>
-
-        {/* Subtext */}
-        <motion.p
-          variants={itemVariants}
-          className='max-w-xl text-base md:text-lg font-medium 
-                     text-gray-600 dark:text-gray-300 leading-relaxed'
-          aria-label='Brief description of the AI LinkedIn post generator tool'
+        {/* Animated backdrop gradient */}
+        <svg
+          aria-hidden='true'
+          className='pointer-events-none absolute inset-0 w-full h-full opacity-60 blur-2xl'
+          viewBox='0 0 200 200'
+          preserveAspectRatio='none'
         >
-          Create engaging, personalized LinkedIn posts effortlessly with
-          AI-powered creativity — amplify your professional presence and save
-          time.
-        </motion.p>
+          <defs>
+            <radialGradient id='g1' cx='30%' cy='50%'>
+              <motion.stop
+                offset='40%'
+                stopColor='#a29bfe'
+                animate={{
+                  stopColor: ["#a29bfe", "#6c5ce7", "#81ecec", "#a29bfe"],
+                }}
+                transition={{
+                  duration: 12,
+                  repeat: Infinity,
+                  repeatType: "mirror",
+                }}
+              />
+              <motion.stop
+                offset='100%'
+                stopColor='#ff6b9c'
+                animate={{
+                  stopColor: ["#ff6b9c", "#fd79a8", "#ffeaa7", "#ff6b9c"],
+                }}
+                transition={{
+                  duration: 25,
+                  repeat: Infinity,
+                  repeatType: "loop",
+                }}
+              />
+            </radialGradient>
+          </defs>
+          <rect width='100%' height='100%' fill='url(#g1)' />
+        </svg>
 
-        {/* Status Message */}
         <motion.div
-          role='status'
-          aria-live='polite'
-          aria-atomic='true'
-          ref={ariaStatusRef}
-          variants={itemVariants}
-          className='mt-6 min-h-[44px] max-w-lg font-semibold text-purple-500 dark:text-pink-400'
+          className='relative flex flex-col items-center gap-4 sm:gap-5'
+          variants={containerVariants}
+          initial='hidden'
+          animate='visible'
+          custom={!!prefersReducedMotion}
         >
-          {statusMessage}
+          {/* Heading row */}
+          <motion.div variants={itemVariants} custom={!!prefersReducedMotion}>
+            <div className='inline-flex items-center gap-3'>
+              <h1
+                className='font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight
+                       text-gray-900 dark:text-gray-100 leading-relaxed'
+              >
+                PostGen : AI LinkedIn Post Generator
+              </h1>
+            </div>
+          </motion.div>
+
+          {/* Subtext */}
+          <motion.p
+            variants={itemVariants}
+            custom={!!prefersReducedMotion}
+            className='max-w-prose text-sm sm:text-base md:text-lg font-medium
+                   text-gray-600 dark:text-gray-300 leading-relaxed px-2'
+          >
+            Create engaging, personalized LinkedIn posts with AI—plan, style,
+            and publish faster while keeping quality high.
+          </motion.p>
+
+          {/* Status live region */}
+          <motion.div
+            role='status'
+            aria-live='polite'
+            aria-atomic='true'
+            ref={ariaStatusRef}
+            variants={itemVariants}
+            custom={!!prefersReducedMotion}
+            className='mt-4 min-h-[44px] max-w-xl font-semibold
+                   text-purple-600 dark:text-pink-400 text-sm sm:text-base'
+          >
+            {statusMessage}
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </header>
+      </header>
+    </MotionConfig>
   );
 }

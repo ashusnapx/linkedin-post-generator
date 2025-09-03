@@ -21,7 +21,7 @@ export default function PostsOutput({ posts }: PostsOutputProps) {
   };
 
   return (
-    <div className='w-full max-w-4xl mx-auto'>
+    <div className='w-full max-w-5xl mx-auto'>
       <Carousel className='w-full'>
         <CarouselContent>
           {posts.map((post, index) => (
