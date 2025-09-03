@@ -22,4 +22,5 @@ export interface PostsOutputProps {
   tokens?: number;
   latency?: number;
   cost?: number;
+  citations?: string[];
 }

@@ -1,23 +1,33 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
-const containerVariants = {
+// ✅ Shared transition (with cubic-bezier easing)
+const baseTransition = {
+  ease: [0.16, 1, 0.3, 1] as never,
+  duration: 0.5,
+};
+
+const containerVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      staggerChildren: 0.3,
-      ease: "easeOut",
+      ...baseTransition,
       duration: 0.6,
+      staggerChildren: 0.3,
     },
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 15 },
-  visible: { opacity: 1, y: 0, transition: { ease: "easeOut", duration: 0.5 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: baseTransition,
+  },
 };
 
 export function StatusHeader({

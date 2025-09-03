@@ -1,35 +1,42 @@
-// src/services/draftingService.ts
 import { safeJSONParse } from "@/src/utils/json";
 import { DEFAULTS } from "@/src/config/constants";
 import { Plan, Draft } from "@/src/types";
+
+interface DraftOptions {
+  tone?: string;
+  audience?: string;
+  length?: string;
+  language?: string;
+  readingLevel?: string;
+  allowEmojis?: boolean;
+  addHashtags?: boolean;
+  hashtagLimit?: number;
+  addCTA?: boolean;
+  ctaStyle?: string;
+  includeLinks?: boolean;
+  temperature?: number;
+  seed?: number;
+  factualContext?: string;
+}
 
 /**
  * From a single plan, generate the draft post content JSON.
  */
 export async function generateDraftForPlan(
-  model: unknown,
+  model: {
+    generateContent: (args: unknown) => Promise<any>;
+  },
   plan: Plan,
-  opts: {
-    tone?: string;
-    audience?: string;
-    length?: string;
-    language?: string;
-    readingLevel?: string;
-    allowEmojis?: boolean;
-    addHashtags?: boolean;
-    hashtagLimit?: number;
-    addCTA?: boolean;
-    ctaStyle?: string;
-    includeLinks?: boolean;
-    temperature?: number;
-    seed?: number;
-  }
+  opts: DraftOptions
 ): Promise<Draft | null> {
   const prompt = `
 Take this plan and draft a complete LinkedIn post.
 
 Plan:
 ${JSON.stringify(plan)}
+
+Facts (must be respected):
+${opts.factualContext || "No additional facts provided"}
 
 Constraints:
 - Tone: ${opts.tone ?? "Default"}
@@ -53,16 +60,17 @@ Return JSON only:
     generationConfig: {
       temperature: opts.temperature ?? DEFAULTS.temperature,
       candidateCount: 1,
-      ...(opts.seed && { seed: opts.seed }),
+      ...(opts.seed ? { seed: opts.seed } : {}),
     },
   });
 
-  const text = res.response.text?.() ?? "";
+  const text: string = res.response.text?.() ?? "";
   const parsed = safeJSONParse(text);
-  if (!parsed || !parsed.content) {
-    // return null to indicate drafting failed for this plan
+
+  if (!parsed || typeof parsed.content !== "string") {
     return null;
   }
+
   return {
     id: parsed.id ?? plan.id,
     content: parsed.content,

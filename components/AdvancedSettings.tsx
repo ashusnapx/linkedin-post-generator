@@ -19,9 +19,8 @@ import { one } from "../lib/utils";
 import { SelectField } from "./SelectField";
 import { CTA_STYLES, READING_LEVELS } from "../lib/constants";
 import { FormValues } from "../lib/schema";
-
 import { Settings, Tag } from "lucide-react";
-import { InfoIcon } from "./InfoIcon"; // Use your defined InfoIcon component
+import { InfoIcon } from "./InfoIcon";
 
 const pastel = {
   indigo: "#bfcaff",

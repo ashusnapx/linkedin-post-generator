@@ -18,7 +18,7 @@ interface MetaData {
 }
 
 interface PostsOutputWrapperProps {
-  posts: any[]; // Replace `any` with specific post type if known
+  posts: never[]; // Replace `any` with specific post type if known
   meta?: MetaData;
 }
 
@@ -87,7 +87,7 @@ export function PostsOutputWrapper({ posts, meta }: PostsOutputWrapperProps) {
           className='
             h-full flex items-center justify-center
             border-2 border-dashed border-gray-300 dark:border-neutral-700
-            rounded-2xl w-full text-center text-muted-foreground p-8
+            rounded-2xl w-full text-center p-8
             font-medium text-gray-500 dark:text-gray-400'
         >
           Your posts will appear here after generation.

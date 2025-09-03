@@ -5,6 +5,7 @@ import { enrichDraft } from "./enrichService";
 import { TOKEN_USD_RATE, MODEL_NAME } from "@/src/config/constants";
 import { GeneratePostsRequest, GeneratePostsResult, Draft } from "@/src/types";
 import { logger } from "@/src/lib/logger";
+import { fetchFacts } from "./factService";
 
 /**
  * Top-level orchestration: run planner -> drafts -> enrich -> metrics.
@@ -12,9 +13,13 @@ import { logger } from "@/src/lib/logger";
  */
 export async function handleGeneratePosts(
   body: GeneratePostsRequest,
-  model: unknown
+  model: {
+    generateContent: (args: unknown) => Promise<any>;
+  }
 ): Promise<GeneratePostsResult> {
   let totalTokens = 0;
+
+  const factualContext = await fetchFacts(body.topic);
 
   // 1. Generate plans
   const plans = await generatePlans(model, {
@@ -34,17 +39,12 @@ export async function handleGeneratePosts(
     examples: body.examples,
     temperature: body.temperature,
     seed: body.seed,
+    factualContext,
   });
-
-  // Tokens: gather from last response if available
-  // Note: model.generateContent returns response.usageMetadata; services don't forward it back.
-  // If you want token accounting per-step, adapt service return shapes to include usageMetadata.
-  // For now attempt to read usage metadata from model responses if accessible; fallback is zero.
-  // (Keeping code simple and safe for tests.)
 
   const posts: Draft[] = [];
 
-  // 2. Draft posts (sequentially to reduce burst and keep deterministic order)
+  // 2. Draft posts
   for (const plan of plans) {
     try {
       const draft = await generateDraftForPlan(model, plan, {
@@ -65,7 +65,6 @@ export async function handleGeneratePosts(
       if (draft) posts.push(draft);
     } catch (err: unknown) {
       logger.warn(`Draft failed for plan id=${plan.id}`, err);
-      // continue with other plans
     }
   }
 
@@ -91,8 +90,7 @@ export async function handleGeneratePosts(
     }
   }
 
-  // Basic (approximate) cost: TODO: get accurate tokens from usageMetadata and sum
-  // We keep tokens=0 because granular token counts require access to response usage metadata in each service.
+  // Cost calculation
   totalTokens = 0;
   const costUSD = totalTokens * TOKEN_USD_RATE;
 
@@ -105,3 +103,4 @@ export async function handleGeneratePosts(
     },
   };
 }
+
