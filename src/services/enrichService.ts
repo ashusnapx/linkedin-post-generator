@@ -1,11 +1,10 @@
-// src/services/enrichService.ts
 import { safeJSONParse } from "@/src/utils/json";
 import { DEFAULTS } from "@/src/config/constants";
 import { Draft } from "@/src/types";
 
 /**
  * Add hashtags, CTA and flags to a draft.
- * Returns an object containing hashtags, cta, flags.
+ * Returns an object containing hashtags, cta, flags, plus usageMetadata.
  */
 export async function enrichDraft(
   model: any,
@@ -19,7 +18,12 @@ export async function enrichDraft(
     temperature?: number;
     seed?: number;
   }
-) {
+): Promise<{
+  hashtags: string[];
+  cta: string;
+  flags: any;
+  usageMetadata?: any;
+} | null> {
   const prompt = `
 Enrich this LinkedIn post with metadata.
 
@@ -51,6 +55,7 @@ Return JSON only:
     },
   });
 
+  const usage = res?.response?.usageMetadata;
   const text = res.response.text?.() ?? "";
   const parsed = safeJSONParse(text);
   if (!parsed) {
@@ -60,5 +65,6 @@ Return JSON only:
     hashtags: Array.isArray(parsed.hashtags) ? parsed.hashtags : [],
     cta: typeof parsed.cta === "string" ? parsed.cta : "",
     flags: parsed.flags ?? {},
+    usageMetadata: usage,
   };
 }

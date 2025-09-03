@@ -21,6 +21,7 @@ interface DraftOptions {
 
 /**
  * From a single plan, generate the draft post content JSON.
+ * Returns: { draft: Draft | null, usageMetadata?: any }
  */
 export async function generateDraftForPlan(
   model: {
@@ -28,7 +29,7 @@ export async function generateDraftForPlan(
   },
   plan: Plan,
   opts: DraftOptions
-): Promise<Draft | null> {
+): Promise<{ draft: Draft | null; usageMetadata?: any }> {
   const prompt = `
 Take this plan and draft a complete LinkedIn post.
 
@@ -64,15 +65,18 @@ Return JSON only:
     },
   });
 
+  const usage = res?.response?.usageMetadata;
   const text: string = res.response.text?.() ?? "";
   const parsed = safeJSONParse(text);
 
   if (!parsed || typeof parsed.content !== "string") {
-    return null;
+    return { draft: null, usageMetadata: usage };
   }
 
-  return {
+  const draft: Draft = {
     id: parsed.id ?? plan.id,
     content: parsed.content,
-  } as Draft;
+  };
+
+  return { draft, usageMetadata: usage };
 }

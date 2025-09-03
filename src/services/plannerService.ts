@@ -14,6 +14,7 @@ interface PlansResponse {
 
 /**
  * Generate 'plans' JSON using the model.
+ * Returns: { plans: Plan[], usageMetadata?: any }
  */
 export async function generatePlans(
   model: {
@@ -38,7 +39,7 @@ export async function generatePlans(
     seed?: number;
     factualContext?: string;
   }
-): Promise<Plan[]> {
+): Promise<{ plans: Plan[]; usageMetadata?: any }> {
   const {
     topic,
     postCount,
@@ -99,6 +100,9 @@ Return JSON only:
     },
   });
 
+  // Gemini wrapper: usage is under res.response.usageMetadata
+  const usage = res?.response?.usageMetadata;
+
   const text: string = res.response.text?.() ?? "";
   const parsed = safeJSONParse(text) as PlansResponse | null;
 
@@ -106,7 +110,7 @@ Return JSON only:
     throw new Error(`Planner failed. Raw response: ${text}`);
   }
 
-  return parsed.plans.map(
+  const plans = parsed.plans.map(
     (p, idx): Plan => ({
       id: typeof p.id === "number" ? p.id : idx + 1,
       hook: p.hook ?? "",
@@ -116,4 +120,6 @@ Return JSON only:
       ...p,
     })
   );
+
+  return { plans, usageMetadata: usage };
 }
