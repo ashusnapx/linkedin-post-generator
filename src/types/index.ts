@@ -43,5 +43,12 @@ export interface GeneratePostsResult {
     tokens: number;
     costUSD: number;
     latencyMs?: number;
+    latency?: {
+      totalMs: number;
+      factFetch?: number;
+      planning?: number;
+      draftAndEnrich?: number;
+      [key: string]: number | undefined;
+    };
   };
 }

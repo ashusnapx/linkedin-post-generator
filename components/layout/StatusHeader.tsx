@@ -40,7 +40,7 @@ export function StatusHeader({
     <MotionConfig reducedMotion='user'>
       <header
         role='banner'
-        className='relative overflow-hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 text-center rounded-2xl max-h-72 md:max-h-66
+        className='relative overflow-hidden max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 text-center rounded-2xl max-h-78 md:max-h-66
                bg-white/70 dark:bg-white/5 backdrop-blur-md ring-1 ring-black/5 dark:ring-white/10
                transition-colors duration-300 mb-10'
         aria-label='AI LinkedIn Post Generator header'

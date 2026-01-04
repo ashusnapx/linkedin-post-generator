@@ -1,6 +1,12 @@
 import { safeJSONParse } from "@/src/utils/json";
-import { DEFAULTS } from "@/src/config/constants";
 import { Plan } from "@/src/types";
+import {
+  DEFAULT_LANGUAGE,
+  DEFAULT_READING_LEVEL,
+  DEFAULT_HASHTAG_LIMIT,
+  DEFAULT_CTA_STYLE,
+  DEFAULT_TEMPERATURE,
+} from "@/src/config/constants";
 
 interface PlansResponse {
   plans: Array<{
@@ -17,9 +23,7 @@ interface PlansResponse {
  * Returns: { plans: Plan[], usageMetadata?: any }
  */
 export async function generatePlans(
-  model: {
-    generateContent: (args: unknown) => Promise<any>;
-  },
+  model: { generateContent: (args: unknown) => Promise<any> },
   opts: {
     topic: string;
     postCount: number;
@@ -73,13 +77,13 @@ Constraints:
 - Tone: ${tone ?? "Default"}
 - Audience: ${audience ?? "General"}
 - Target Length: ${length ?? "medium"}
-- Language: ${language ?? DEFAULTS.language}
-- Reading Level: ${readingLevel ?? DEFAULTS.readingLevel}
+- Language: ${language ?? DEFAULT_LANGUAGE}
+- Reading Level: ${readingLevel ?? DEFAULT_READING_LEVEL}
 - Use Emojis: ${allowEmojis ? "Yes" : "No"}
 - Add Hashtags: ${addHashtags ? "Yes" : "No"} (limit: ${
-    hashtagLimit ?? DEFAULTS.hashtagLimit
+    hashtagLimit ?? DEFAULT_HASHTAG_LIMIT
   })
-- Add CTA: ${addCTA ? "Yes" : "No"} (style: ${ctaStyle ?? "Neutral"})
+- Add CTA: ${addCTA ? "Yes" : "No"} (style: ${ctaStyle ?? DEFAULT_CTA_STYLE})
 - Include Links: ${includeLinks ? "Yes" : "No"}
 
 Examples to consider: ${examples ?? "None"}
@@ -94,15 +98,13 @@ Return JSON only:
   const res = await model.generateContent({
     contents: [{ role: "user", parts: [{ text: prompt }] }],
     generationConfig: {
-      temperature: temperature ?? DEFAULTS.temperature,
+      temperature: temperature ?? DEFAULT_TEMPERATURE,
       candidateCount: 1,
       ...(seed ? { seed } : {}),
     },
   });
 
-  // Gemini wrapper: usage is under res.response.usageMetadata
   const usage = res?.response?.usageMetadata;
-
   const text: string = res.response.text?.() ?? "";
   const parsed = safeJSONParse(text) as PlansResponse | null;
 

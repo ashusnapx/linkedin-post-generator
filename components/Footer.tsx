@@ -1,34 +1,15 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Github, Linkedin, Twitter } from "lucide-react";
 import { motion, MotionConfig, useReducedMotion } from "framer-motion";
-import Link from "next/link";
+import { HEALTH_COLORS, HEALTH_TEXT, FOOTER_BORDER, FOOTER_BG, GRADIENT_TEXT, FOOTER_TEXT, NAV_ITEMS, SOCIAL_LINKS } from "@/src/config/constants";
 
 type Health = "loading" | "ok" | "error";
-
-const year = new Date().getFullYear();
-
-const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Features", href: "#features" },
-  { label: "Demo", href: "#demo" },
-  { label: "GitHub", href: "https://github.com/ashutosh" },
-];
-
-const socials = [
-  { name: "GitHub", icon: Github, href: "https://github.com/ashusnapx" },
-  {
-    name: "LinkedIn",
-    icon: Linkedin,
-    href: "https://linkedin.com/in/ashusnapx",
-  },
-  { name: "Twitter", icon: Twitter, href: "https://twitter.com/ashusnapx" },
-];
 
 const Footer = (): React.JSX.Element => {
   const [health, setHealth] = useState<Health>("loading");
   const shouldReduceMotion = useReducedMotion();
+  const year = new Date().getFullYear();
 
   useEffect(() => {
     let mounted = true;
@@ -48,16 +29,10 @@ const Footer = (): React.JSX.Element => {
     };
   }, []);
 
-  const healthConfig = useMemo(() => {
-    switch (health) {
-      case "ok":
-        return { color: "bg-green-600", text: "Healthy" };
-      case "error":
-        return { color: "bg-red-600", text: "Down" };
-      default:
-        return { color: "bg-gray-400", text: "Checking health…" };
-    }
-  }, [health]);
+  const healthConfig = useMemo(
+    () => ({ color: HEALTH_COLORS[health], text: HEALTH_TEXT[health] }),
+    [health]
+  );
 
   return (
     <MotionConfig reducedMotion='user'>
@@ -70,31 +45,28 @@ const Footer = (): React.JSX.Element => {
           duration: shouldReduceMotion ? 0.2 : 0.6,
           ease: "easeOut",
         }}
-        className='border-t border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md'
+        className={`${FOOTER_BORDER} ${FOOTER_BG}`}
         aria-label='Site footer'
       >
         <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10'>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-            {/* Brand Section */}
+            {/* Brand */}
             <section aria-labelledby='footer-brand'>
               <h2
                 id='footer-brand'
                 className='text-xl font-bold tracking-tight'
               >
-                <span className='bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent'>
+                <span className={GRADIENT_TEXT}>
                   PostGen
-                  <sup className='bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent'>
-                    ©
-                  </sup>
+                  <sup className={GRADIENT_TEXT}>©</sup>
                 </span>
               </h2>
               <p className='mt-2 text-sm text-gray-600 dark:text-gray-400'>
-                Generate LinkedIn‑ready posts with AI. Polished. Personalized.
-                Instant.
+                {FOOTER_TEXT.description}
               </p>
             </section>
 
-            {/* Nav Links */}
+            {/* Nav */}
             <nav aria-labelledby='footer-quick-links'>
               <h2
                 id='footer-quick-links'
@@ -103,7 +75,7 @@ const Footer = (): React.JSX.Element => {
                 Quick Links
               </h2>
               <ul className='mt-2 space-y-2'>
-                {navItems.map((item) => (
+                {NAV_ITEMS.map((item) => (
                   <li key={item.label}>
                     <a
                       href={item.href}
@@ -125,16 +97,15 @@ const Footer = (): React.JSX.Element => {
                 Connect
               </h2>
               <ul className='flex gap-3 mt-2' aria-label='Social links'>
-                {socials.map((s) => {
+                {SOCIAL_LINKS.map((s) => {
                   const Icon = s.icon;
-                  const label = `${s.name} (opens in new tab)`;
                   return (
                     <li key={s.name}>
                       <a
                         href={s.href}
                         target='_blank'
                         rel='noopener noreferrer'
-                        aria-label={label}
+                        aria-label={`${s.name} (opens in new tab)`}
                         className='inline-flex items-center justify-center p-2 rounded-lg bg-gray-200/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900'
                       >
                         <Icon size={18} aria-hidden='true' />
@@ -144,7 +115,6 @@ const Footer = (): React.JSX.Element => {
                 })}
               </ul>
 
-              {/* Health status */}
               <div
                 className='mt-4 text-sm flex items-center gap-2'
                 aria-live='polite'
@@ -158,10 +128,12 @@ const Footer = (): React.JSX.Element => {
             </section>
           </div>
 
-          {/* Divider */}
+          {/* Footer bottom */}
           <div className='border-t border-gray-200 dark:border-gray-800 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-sm text-gray-600 dark:text-gray-400'>
-            <span>© {year} PostGen. All rights reserved.</span>
-            <span className='mt-2 sm:mt-0'>Built with ❤️ by Ashutosh</span>
+            <span>
+              © {year} PostGen. {FOOTER_TEXT.copyright}
+            </span>
+            <span className='mt-2 sm:mt-0'>{FOOTER_TEXT.builtBy}</span>
           </div>
         </div>
       </motion.footer>

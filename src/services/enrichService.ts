@@ -1,6 +1,6 @@
 import { safeJSONParse } from "@/src/utils/json";
-import { DEFAULTS } from "@/src/config/constants";
 import { Draft } from "@/src/types";
+import { DEFAULT_CTA_STYLE, DEFAULT_HASHTAG_LIMIT, DEFAULT_LANGUAGE, DEFAULT_TEMPERATURE } from "../config/constants";
 
 /**
  * Add hashtags, CTA and flags to a draft.
@@ -32,10 +32,12 @@ ${draft.content}
 
 Constraints:
 - Add Hashtags: ${opts.addHashtags ? "Yes" : "No"} (limit: ${
-    opts.hashtagLimit ?? DEFAULTS.hashtagLimit
+    opts.hashtagLimit ?? DEFAULT_HASHTAG_LIMIT
   })
-- Add CTA: ${opts.addCTA ? "Yes" : "No"} (style: ${opts.ctaStyle ?? "Neutral"})
-- Language: ${opts.language ?? DEFAULTS.language}
+- Add CTA: ${opts.addCTA ? "Yes" : "No"} (style: ${
+    opts.ctaStyle ?? DEFAULT_CTA_STYLE
+  })
+- Language: ${opts.language ?? DEFAULT_LANGUAGE}
 
 Return JSON only:
 {
@@ -49,7 +51,7 @@ Return JSON only:
   const res = await model.generateContent({
     contents: [{ role: "user", parts: [{ text: prompt }] }],
     generationConfig: {
-      temperature: opts.temperature ?? DEFAULTS.temperature,
+      temperature: opts.temperature ?? DEFAULT_TEMPERATURE,
       candidateCount: 1,
       ...(opts.seed && { seed: opts.seed }),
     },
@@ -58,9 +60,8 @@ Return JSON only:
   const usage = res?.response?.usageMetadata;
   const text = res.response.text?.() ?? "";
   const parsed = safeJSONParse(text);
-  if (!parsed) {
-    return null;
-  }
+  if (!parsed) return null;
+
   return {
     hashtags: Array.isArray(parsed.hashtags) ? parsed.hashtags : [],
     cta: typeof parsed.cta === "string" ? parsed.cta : "",

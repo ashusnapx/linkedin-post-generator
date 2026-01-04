@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Post, GenerationMeta } from "@/src/utils/types";
 import { computeCostFromTokens } from "@/src/utils/cost";
 
@@ -32,36 +33,32 @@ export async function generatePosts(values: Record<string, unknown>): Promise<{
   if (!res.ok) throw new Error(json.error || "Failed to generate posts");
 
   // Normalize posts
-  const postsData = json.posts || json || [];
+  const postsData = json.posts ?? json ?? [];
   const normalizedPosts: Post[] = Array.isArray(postsData)
-    ? postsData.map((p: any, idx: number) =>
-        typeof p === "string"
-          ? { id: idx + 1, content: p }
-          : {
-              id: p.id ?? idx + 1,
-              content: p.content ?? "",
-              hashtags: p.hashtags,
-              cta: p.cta,
-              citations: p.citations,
-              flags: p.flags,
-            }
-      )
+    ? postsData.map((p: any, idx: number) => ({
+        id: typeof p === "string" ? idx + 1 : p.id ?? idx + 1,
+        content: typeof p === "string" ? p : p.content ?? "",
+        hashtags: p?.hashtags ?? [],
+        cta: p?.cta ?? "",
+        citations: p?.citations ?? [],
+        flags: p?.flags ?? {},
+      }))
     : [];
 
   // Normalize tokens
-  let tokens = json.meta?.tokens ?? json.tokens ?? json.meta?.token_usage;
-  if (tokens && typeof tokens === "object") {
-    tokens = tokens.total ?? 0;
-  }
+  let tokens: number = 0;
+  if (json.meta?.tokens != null) tokens = json.meta.tokens;
+  else if (json.tokens != null) tokens = json.tokens;
+  else if (json.meta?.token_usage?.total != null) tokens = json.meta.token_usage.total;
 
   const serverMeta = json.meta ?? {};
-  const costUSD = serverMeta.costUSD ?? json.costUSD;
-  const model = serverMeta.model ?? json.model;
+  const costUSD = serverMeta.costUSD ?? json.costUSD ?? computeCostFromTokens(tokens);
+  const model = serverMeta.model ?? json.model ?? "unknown";
 
   const meta: GenerationMeta = {
     tokens,
     latencyMs,
-    costUSD: costUSD ?? computeCostFromTokens(tokens),
+    costUSD,
     model,
   };
 

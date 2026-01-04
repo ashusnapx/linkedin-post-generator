@@ -43,26 +43,7 @@ import {
 } from "@/components/ui/tooltip";
 import { LucideInfo } from "lucide-react";
 import PostsOutput from "./PostsOutput";
-
-// -----------------------------
-// Constants
-// -----------------------------
-const PERSONAS = [
-  "Startup Founder",
-  "Career Coach",
-  "Techie",
-  "Analyst",
-] as const;
-const LENGTHS = ["short", "medium", "long"] as const;
-const POST_COUNTS = ["3", "4", "5"] as const;
-const LANGUAGES = ["English", "Hindi", "Hinglish"] as const;
-const CTA_STYLES = ["Question", "Directive", "Soft Ask", "No CTA"] as const;
-const READING_LEVELS = [
-  "Grade 6",
-  "Grade 8",
-  "Grade 10",
-  "Professional",
-] as const;
+import { PERSONAS, LENGTHS, POST_COUNTS, LANGUAGES, CTA_STYLES, READING_LEVELS } from "@/lib/constants";
 
 // -----------------------------
 // Schema
