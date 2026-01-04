@@ -1,4 +1,5 @@
 // src/services/batchDraftingService.ts
+import { GenerativeModel } from "@google/generative-ai";
 import { safeJSONParse } from "@/src/utils/json";
 import { DEFAULTS } from "@/src/config/constants";
 import { Plan, Draft } from "@/src/types";
@@ -41,10 +42,10 @@ interface BatchDraftResult {
  * Token savings: ~60-70% compared to sequential per-plan calls
  */
 export async function generateAllDraftsWithEnrichment(
-  model: { generateContent: (args: unknown) => Promise<any> },
+  model: GenerativeModel,
   plans: Plan[],
   opts: BatchDraftOptions
-): Promise<{ drafts: Draft[]; usageMetadata?: any }> {
+): Promise<{ drafts: Draft[]; usageMetadata?: unknown }> {
   const hashtagLimit = opts.hashtagLimit ?? DEFAULTS.hashtagLimit;
   const ctaStyle = opts.ctaStyle ?? "Neutral";
 

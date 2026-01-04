@@ -32,8 +32,8 @@ export const ToggleItem: React.FC<ToggleItemProps> = ({
 }) => {
   return (
     <FormField
-      control={control as any}
-      name={name as any}
+      control={control}
+      name={name}
       render={({ field }) => (
         <FormItem className='flex items-center justify-between rounded-xl border border-neutral-800 bg-neutral-900/50 p-4 transition-colors hover:border-neutral-700'>
           <div className='space-y-0.5'>

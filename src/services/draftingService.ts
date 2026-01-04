@@ -1,3 +1,4 @@
+import { GenerativeModel } from "@google/generative-ai";
 import { safeJSONParse } from "@/src/utils/json";
 import { DEFAULTS } from "@/src/config/constants";
 import { Plan, Draft } from "@/src/types";
@@ -24,12 +25,10 @@ interface DraftOptions {
  * Returns: { draft: Draft | null, usageMetadata?: any }
  */
 export async function generateDraftForPlan(
-  model: {
-    generateContent: (args: unknown) => Promise<any>;
-  },
+  model: GenerativeModel,
   plan: Plan,
   opts: DraftOptions
-): Promise<{ draft: Draft | null; usageMetadata?: any }> {
+): Promise<{ draft: Draft | null; usageMetadata?: unknown }> {
   const prompt = `
 Take this plan and draft a complete LinkedIn post.
 
@@ -67,7 +66,7 @@ Return JSON only:
 
   const usage = res?.response?.usageMetadata;
   const text: string = res.response.text?.() ?? "";
-  const parsed = safeJSONParse(text);
+  const parsed = safeJSONParse(text) as any;
 
   if (!parsed || typeof parsed.content !== "string") {
     return { draft: null, usageMetadata: usage };

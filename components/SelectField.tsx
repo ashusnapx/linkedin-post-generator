@@ -37,7 +37,6 @@ export function SelectField<T extends string>({
   tooltip,
 }: SelectFieldProps<T>) {
   return (
-  return (
     <FormField
       control={control}
       name={name}

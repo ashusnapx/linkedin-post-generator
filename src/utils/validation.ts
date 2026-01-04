@@ -25,7 +25,7 @@ export function validateRequestBody(
   if (typeof postCount === "string") {
     const parsed = parseInt(postCount, 10);
     if (Number.isFinite(parsed)) {
-      (b as any).postCount = parsed; // update body in place for downstream
+      (b as { postCount: number }).postCount = parsed; // update body in place for downstream
       postCount = parsed;
     }
   }

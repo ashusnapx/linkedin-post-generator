@@ -1,13 +1,19 @@
+import { GenerativeModel } from "@google/generative-ai";
 import { safeJSONParse } from "@/src/utils/json";
 import { Draft } from "@/src/types";
-import { DEFAULT_CTA_STYLE, DEFAULT_HASHTAG_LIMIT, DEFAULT_LANGUAGE, DEFAULT_TEMPERATURE } from "../config/constants";
+import {
+  DEFAULT_CTA_STYLE,
+  DEFAULT_HASHTAG_LIMIT,
+  DEFAULT_LANGUAGE,
+  DEFAULT_TEMPERATURE,
+} from "../config/constants";
 
 /**
  * Add hashtags, CTA and flags to a draft.
  * Returns an object containing hashtags, cta, flags, plus usageMetadata.
  */
 export async function enrichDraft(
-  model: any,
+  model: GenerativeModel,
   draft: Draft,
   opts: {
     addHashtags?: boolean;
@@ -21,8 +27,8 @@ export async function enrichDraft(
 ): Promise<{
   hashtags: string[];
   cta: string;
-  flags: any;
-  usageMetadata?: any;
+  flags: { profanity: boolean; riskyClaims: string[] };
+  usageMetadata?: unknown;
 } | null> {
   const prompt = `
 Enrich this LinkedIn post with metadata.
@@ -59,7 +65,7 @@ Return JSON only:
 
   const usage = res?.response?.usageMetadata;
   const text = res.response.text?.() ?? "";
-  const parsed = safeJSONParse(text);
+  const parsed = safeJSONParse(text) as any;
   if (!parsed) return null;
 
   return {
