@@ -156,7 +156,7 @@ export const AdvancedSettings: React.FC<{
                 return (
                   <FormField
                     key={f.name as string}
-                    control={control as any}
+                    control={control}
                     name={f.name}
                     render={({ field }) => (
                       <FormItem>
@@ -174,7 +174,11 @@ export const AdvancedSettings: React.FC<{
                             }
                           >
                             <Slider
-                              value={[field.value]}
+                              value={[
+                                typeof field.value === "number"
+                                  ? field.value
+                                  : f.min,
+                              ]}
                               min={f.min}
                               max={f.max}
                               step={f.step}
@@ -183,7 +187,11 @@ export const AdvancedSettings: React.FC<{
                             />
                             {f.getValueLabel && (
                               <p className='mt-3 text-xs text-neutral-500 font-mono'>
-                                {f.getValueLabel(field.value)}
+                                {f.getValueLabel(
+                                  typeof field.value === "number"
+                                    ? field.value
+                                    : f.min
+                                )}
                               </p>
                             )}
                           </div>
@@ -213,7 +221,7 @@ export const AdvancedSettings: React.FC<{
                 return (
                   <FormField
                     key={f.name as string}
-                    control={control as any}
+                    control={control}
                     name={f.name}
                     render={({ field }) => (
                       <FormItem>
@@ -228,7 +236,7 @@ export const AdvancedSettings: React.FC<{
                               f.inputType === "number" ? "numeric" : "text"
                             }
                             placeholder={f.placeholder}
-                            value={field.value ?? ""}
+                            value={field.value?.toString() ?? ""}
                             onChange={(e) =>
                               f.onValueChange
                                 ? f.onValueChange(
@@ -250,7 +258,7 @@ export const AdvancedSettings: React.FC<{
                 return (
                   <FormField
                     key={f.name as string}
-                    control={control as any}
+                    control={control}
                     name={f.name}
                     render={({ field }) => (
                       <FormItem className={f.extraClass}>
@@ -263,6 +271,7 @@ export const AdvancedSettings: React.FC<{
                             rows={4}
                             placeholder={f.placeholder}
                             {...field}
+                            value={field.value?.toString() ?? ""}
                             className='bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-600 focus:ring-blue-500/50 resize-none'
                           />
                         </FormControl>

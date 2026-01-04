@@ -6,7 +6,7 @@ import { GridWrapper } from "./GridWrapper";
 import { Control } from "react-hook-form";
 import { FormValues } from "../../lib/schema";
 
-interface ToggleFieldConfig {
+export interface ToggleFieldConfig {
   name: keyof FormValues;
   label: string;
   desc?: string;

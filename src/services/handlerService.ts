@@ -1,3 +1,4 @@
+import { GenerativeModel } from "@google/generative-ai";
 import { generatePlans } from "./plannerService";
 import { generateAllDraftsWithEnrichment } from "./batchDraftingService";
 import { fetchFacts } from "./factService";
@@ -34,7 +35,7 @@ import { logger } from "@/src/lib/logger";
  */
 export async function handleGeneratePosts(
   body: GeneratePostsRequest,
-  model: { generateContent: (args: unknown) => Promise<any> }
+  model: GenerativeModel
 ): Promise<GeneratePostsResult> {
   let totalTokens = 0;
   const startTime = Date.now();
@@ -56,15 +57,18 @@ export async function handleGeneratePosts(
   const planRes = await generatePlans(model, { ...body, factualContext });
   timings.planning = Date.now() - t1;
 
-  if (planRes.usageMetadata?.totalTokenCount != null) {
-    totalTokens += planRes.usageMetadata.totalTokenCount;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const planUsage = planRes.usageMetadata as any;
+  if (planUsage?.totalTokenCount != null) {
+    totalTokens += planUsage.totalTokenCount;
   }
 
   const plans = Array.isArray(planRes.plans) ? planRes.plans : [];
   logger.info("Planning complete", {
     duration: timings.planning,
     planCount: plans.length,
-    planTokens: planRes.usageMetadata?.totalTokenCount,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    planTokens: (planRes.usageMetadata as any)?.totalTokenCount,
   });
 
   if (plans.length === 0) {
@@ -80,14 +84,17 @@ export async function handleGeneratePosts(
   );
   timings.draftAndEnrich = Date.now() - t2;
 
-  if (usageMetadata?.totalTokenCount != null) {
-    totalTokens += usageMetadata.totalTokenCount;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const draftUsage = usageMetadata as any;
+  if (draftUsage?.totalTokenCount != null) {
+    totalTokens += draftUsage.totalTokenCount;
   }
 
   logger.info("Draft+Enrich complete", {
     duration: timings.draftAndEnrich,
     draftCount: drafts.length,
-    draftTokens: usageMetadata?.totalTokenCount,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    draftTokens: (usageMetadata as any)?.totalTokenCount,
   });
 
   // Compute final metrics

@@ -141,10 +141,13 @@ export function ApiKeyModal({ isOpen, onClose }: ApiKeyModalProps) {
                   rel='noopener noreferrer'
                   className='flex items-center gap-2 p-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded-lg transition-colors group'
                 >
-                  <img
+                  <Image
                     src='https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg'
                     alt='Gemini'
+                    width={20}
+                    height={20}
                     className='w-5 h-5'
+                    unoptimized
                   />
                   <span className='text-sm text-neutral-200 group-hover:text-white'>
                     Google AI Studio

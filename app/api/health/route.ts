@@ -42,6 +42,6 @@ export async function GET() {
       version: process.env.npm_package_version ?? "dev",
       timestamp: new Date().toISOString(),
     },
-    { status: overallStatus === "error" ? 503 : 200 }
+    { status: (overallStatus as string) === "error" ? 503 : 200 }
   );
 }

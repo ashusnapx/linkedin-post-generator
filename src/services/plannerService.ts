@@ -1,3 +1,4 @@
+import { GenerativeModel } from "@google/generative-ai";
 import { safeJSONParse } from "@/src/utils/json";
 import { Plan } from "@/src/types";
 import {
@@ -23,7 +24,7 @@ interface PlansResponse {
  * Returns: { plans: Plan[], usageMetadata?: any }
  */
 export async function generatePlans(
-  model: { generateContent: (args: unknown) => Promise<any> },
+  model: GenerativeModel,
   opts: {
     topic: string;
     postCount: number;
@@ -43,7 +44,7 @@ export async function generatePlans(
     seed?: number;
     factualContext?: string;
   }
-): Promise<{ plans: Plan[]; usageMetadata?: any }> {
+): Promise<{ plans: Plan[]; usageMetadata?: unknown }> {
   const {
     topic,
     postCount,
@@ -114,12 +115,12 @@ Return JSON only:
 
   const plans = parsed.plans.map(
     (p, idx): Plan => ({
+      ...p,
       id: typeof p.id === "number" ? p.id : idx + 1,
       hook: p.hook ?? "",
       points: Array.isArray(p.points) ? p.points : [],
       cta: p.cta ?? "",
       example_angle: p.example_angle ?? "",
-      ...p,
     })
   );
 

@@ -65,6 +65,7 @@ Return JSON only:
 
   const usage = res?.response?.usageMetadata;
   const text = res.response.text?.() ?? "";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parsed = safeJSONParse(text) as any;
   if (!parsed) return null;
 

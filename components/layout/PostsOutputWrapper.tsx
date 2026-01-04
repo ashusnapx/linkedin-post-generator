@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { BookText, CheckCircle, User } from "lucide-react";
 import PostsOutput from "../PostsOutput";
+import { Post } from "../posts/types";
 
 const pastel = {
   lavender: "#c7ceea",
@@ -18,8 +19,8 @@ interface MetaData {
 }
 
 interface PostsOutputWrapperProps {
-  posts: never[]; // Replace `any` with specific post type if known
-  meta?: MetaData;
+  posts: Post[];
+  meta?: MetaData | null;
 }
 
 /**

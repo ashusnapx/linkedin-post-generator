@@ -27,7 +27,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: config.seo.title,
   description: config.seo.description,
-  keywords: config.seo.keywords,
+  keywords: [...config.seo.keywords],
   authors: [{ name: config.seo.author.name, url: config.seo.author.url }],
   creator: config.seo.author.name,
   metadataBase: new URL(config.seo.url),

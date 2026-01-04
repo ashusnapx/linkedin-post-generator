@@ -32,7 +32,7 @@ export function StatusHeader({
   ariaStatusRef,
 }: {
   statusMessage: React.ReactNode;
-  ariaStatusRef: React.RefObject<HTMLDivElement>;
+  ariaStatusRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const prefersReducedMotion = useReducedMotion();
 

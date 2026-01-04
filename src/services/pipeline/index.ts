@@ -39,7 +39,7 @@
  * - Deterministic stages save ~500+ tokens per request
  */
 
-export { PipelineContext, PipelineStage, Plan, Draft } from "./types";
+export type { PipelineContext, PipelineStage, Plan, Draft } from "./types";
 export { intentNormalizationStage } from "./intentNormalization";
 export { guardrailsStage, getGuardrailsSummary } from "./guardrails";
 

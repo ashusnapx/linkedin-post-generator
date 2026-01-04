@@ -13,7 +13,7 @@ import { GridWrapper } from "./GridWrapper";
 import { Control } from "react-hook-form";
 import { FormValues } from "../../lib/schema";
 
-interface InputFieldConfig {
+export interface InputFieldConfig {
   name: keyof FormValues;
   label: string;
   icon?: React.ReactNode;
@@ -52,6 +52,7 @@ export function InputFields({
                   placeholder={placeholder}
                   required={required}
                   {...field}
+                  value={field.value?.toString() ?? ""}
                   className='bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:ring-blue-500/50'
                 />
               </FormControl>

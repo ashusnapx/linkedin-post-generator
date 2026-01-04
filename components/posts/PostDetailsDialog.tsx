@@ -27,7 +27,7 @@ export default function PostDetailsDialog({
       try {
         await navigator.clipboard.writeText(post.content);
         toast.success("Copied successfully ✅"); // ✅ success toast
-      } catch (err) {
+      } catch {
         toast.error("Failed to copy ❌"); // fallback error toast
       }
     }

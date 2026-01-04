@@ -58,7 +58,7 @@ export default function MainComponent(): React.JSX.Element {
   useEffect(() => {
     const keys = Object.keys(errors || {});
     if (keys.length > 0 && assertiveRef.current) {
-      const firstKey = keys;
+      const firstKey = keys[0];
       const err = (errors as Record<string, { message?: string }>)[firstKey];
       const msg = err?.message || `There is an error in ${firstKey}.`;
       assertiveRef.current.textContent = msg;

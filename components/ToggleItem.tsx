@@ -15,7 +15,7 @@ import { InfoIcon } from "./InfoIcon";
 interface ToggleItemProps {
   control: Control<FormValues>;
   name: keyof FormValues;
-  label: string;
+  label: React.ReactNode;
   desc?: string;
   tip?: string;
 }
@@ -48,7 +48,7 @@ export const ToggleItem: React.FC<ToggleItemProps> = ({
           </div>
           <FormControl>
             <Switch
-              checked={field.value}
+              checked={!!field.value}
               onCheckedChange={field.onChange}
               className='data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-neutral-700'
             />

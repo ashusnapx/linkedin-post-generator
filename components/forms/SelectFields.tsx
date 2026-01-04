@@ -6,7 +6,7 @@ import { GridWrapper } from "./GridWrapper";
 import { Control } from "react-hook-form";
 import { FormValues } from "../../lib/schema";
 
-interface SelectFieldConfig {
+export interface SelectFieldConfig {
   name: keyof FormValues;
   label: string;
   icon?: React.ReactNode;

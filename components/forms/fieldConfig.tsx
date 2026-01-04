@@ -14,7 +14,11 @@ import {
 // Using standard Tailwind colors via classes in rendering or keeping generic icons
 // For consistency, we'll pass the icon components directly.
 
-export const inputFields = [
+import { InputFieldConfig } from "./InputFields";
+import { SelectFieldConfig } from "./SelectFields";
+import { ToggleFieldConfig } from "./ToggleFields";
+
+export const inputFields: InputFieldConfig[] = [
   {
     name: "topic",
     label: "Topic",
@@ -32,7 +36,7 @@ export const inputFields = [
   },
 ];
 
-export const selectFields = [
+export const selectFields: SelectFieldConfig[] = [
   {
     name: "tone",
     label: "Tone",
@@ -63,7 +67,7 @@ export const selectFields = [
   },
 ];
 
-export const toggleFields = [
+export const toggleFields: ToggleFieldConfig[] = [
   {
     name: "allowEmojis",
     label: "Use Emojis",
