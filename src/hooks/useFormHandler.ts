@@ -1,3 +1,5 @@
+// src/hooks/useFormHandler.ts
+"use client";
 import React from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,6 +7,7 @@ import { generatePosts } from "@/src/services/postService";
 import { Post, GenerationMeta } from "@/src/utils/types";
 import { toast } from "sonner";
 import { FormValues, schema } from "@/lib/schema";
+import { useApiKey } from "@/src/context/ApiKeyContext";
 
 const DEFAULT_VALUES: FormValues = {
   topic: "",
@@ -27,6 +30,7 @@ const DEFAULT_VALUES: FormValues = {
 
 /**
  * Custom hook wrapping form + post generation flow.
+ * Now includes API key integration.
  */
 export function useFormHandler() {
   const form = useForm<FormValues>({
@@ -34,25 +38,46 @@ export function useFormHandler() {
     defaultValues: DEFAULT_VALUES,
   });
 
+  const { apiKey, isKeySet } = useApiKey();
   const [posts, setPosts] = React.useState<Post[]>([]);
   const [meta, setMeta] = React.useState<GenerationMeta | null>(null);
+  const [stepMessages, setStepMessages] = React.useState<string[]>([]);
 
-  const onSubmit = React.useCallback(async (values: FormValues) => {
-    try {
-      toast.loading("Generating posts…", { id: "gen" });
+  const onSubmit = React.useCallback(
+    async (values: FormValues) => {
+      // Check for API key
+      if (!isKeySet) {
+        toast.error("Please connect your API key first", { id: "gen" });
+        return;
+      }
 
-      const { posts: newPosts, meta: newMeta } = await generatePosts(values);
+      try {
+        setStepMessages(["Initializing generation pipeline..."]);
+        toast.loading("Generating posts…", { id: "gen" });
 
-      setPosts(newPosts);
-      setMeta(newMeta);
+        setStepMessages((prev) => [...prev, "Fetching factual context..."]);
 
-      toast.success("Posts generated successfully 🚀", { id: "gen" });
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Something went wrong. Try again.";
-      toast.error(message, { id: "gen" });
-    }
-  }, []);
+        const { posts: newPosts, meta: newMeta } = await generatePosts(
+          values,
+          apiKey
+        );
+
+        setPosts(newPosts);
+        setMeta(newMeta);
+        setStepMessages([]);
+
+        toast.success("Posts generated successfully 🚀", { id: "gen" });
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Something went wrong. Try again.";
+        toast.error(message, { id: "gen" });
+        setStepMessages([]);
+      }
+    },
+    [apiKey, isKeySet]
+  );
 
   return {
     form: form as UseFormReturn<FormValues>,
@@ -61,5 +86,7 @@ export function useFormHandler() {
     setPosts,
     meta,
     setMeta,
+    stepMessages,
+    isKeySet,
   };
 }

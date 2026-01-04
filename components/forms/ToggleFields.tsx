@@ -8,14 +8,14 @@ import { GridWrapper } from "./GridWrapper";
  */
 export function ToggleFields({ fields, control }: any) {
   return (
-    <GridWrapper colsMobile={2} colsSm={4} gap={4}>
+    <GridWrapper className='grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6'>
       {fields.map(({ name, label, desc, icon, tooltip }) => (
         <ToggleItem
           key={name}
           control={control}
           name={name}
           label={
-            <span className='flex items-center gap-2'>
+            <span className='flex items-center gap-2 text-sm text-neutral-300'>
               {icon}
               <span>{label}</span>
               {tooltip && <InfoIcon text={tooltip} />}

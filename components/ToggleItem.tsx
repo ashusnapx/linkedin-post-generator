@@ -35,15 +35,23 @@ export const ToggleItem: React.FC<ToggleItemProps> = ({
       control={control as any}
       name={name as any}
       render={({ field }) => (
-        <FormItem className='flex items-center justify-between rounded-xl border p-4'>
+        <FormItem className='flex items-center justify-between rounded-xl border border-neutral-800 bg-neutral-900/50 p-4 transition-colors hover:border-neutral-700'>
           <div className='space-y-0.5'>
-            <FormLabel>
+            <FormLabel className='text-sm font-medium text-neutral-300 flex items-center gap-2'>
               {label} {tip && <InfoIcon text={tip} />}
             </FormLabel>
-            {desc && <FormDescription>{desc}</FormDescription>}
+            {desc && (
+              <FormDescription className='text-xs text-neutral-500 font-medium'>
+                {desc}
+              </FormDescription>
+            )}
           </div>
           <FormControl>
-            <Switch checked={field.value} onCheckedChange={field.onChange} />
+            <Switch
+              checked={field.value}
+              onCheckedChange={field.onChange}
+              className='data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-neutral-700'
+            />
           </FormControl>
         </FormItem>
       )}

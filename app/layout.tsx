@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import { ApiKeyProvider } from "@/src/context/ApiKeyContext";
+import { config } from "@/src/config";
 
 // Font configuration
 const geistSans = Geist({
@@ -21,37 +23,25 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-// Metadata
+// Metadata from centralized config
 export const metadata: Metadata = {
-  title: {
-    default: "AI LinkedIn Post Generator",
-    template: "%s | AI LinkedIn Post Generator",
-  },
-  description:
-    "Generate polished, LinkedIn-ready posts from any topic using AI. Multiple tones, personas, hashtags, and CTAs supported. Built with Next.js + OpenAI.",
-  keywords: [
-    "AI",
-    "LinkedIn Post Generator",
-    "Next.js",
-    "OpenAI",
-    "Vercel",
-    "Content Automation",
-  ],
-  authors: [{ name: "Ashutosh", url: "https://github.com/ashutosh" }],
-  creator: "Ashutosh",
-  metadataBase: new URL("https://postgen.ashutosh.dev"),
+  title: config.seo.title,
+  description: config.seo.description,
+  keywords: config.seo.keywords,
+  authors: [{ name: config.seo.author.name, url: config.seo.author.url }],
+  creator: config.seo.author.name,
+  metadataBase: new URL(config.seo.url),
   openGraph: {
-    title: "AI LinkedIn Post Generator",
-    description:
-      "Turn topics into multiple LinkedIn post drafts in seconds. Powered by AI, designed for creators.",
-    url: "https://postgen.ashutosh.dev",
-    siteName: "PostGen",
+    title: config.seo.title.default,
+    description: config.seo.description,
+    url: config.seo.url,
+    siteName: config.ui.brand.name,
     images: [
       {
-        url: "/og-image.png",
+        url: config.seo.ogImage,
         width: 1200,
         height: 630,
-        alt: "AI LinkedIn Post Generator",
+        alt: config.seo.title.default,
       },
     ],
     locale: "en_US",
@@ -59,11 +49,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI LinkedIn Post Generator",
-    description:
-      "Turn topics into multiple LinkedIn-ready post drafts in seconds.",
-    images: ["/og-image.png"],
-    creator: "@yourhandle",
+    title: config.seo.title.default,
+    description: config.seo.description,
+    images: [config.seo.ogImage],
+    creator: config.seo.author.twitter,
   },
   icons: {
     icon: "/favicon.ico",
@@ -85,18 +74,20 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className='flex flex-col min-h-screen bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 transition-colors grainy'>
+      <body className='flex flex-col min-h-screen bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 transition-colors'>
         <ThemeProvider attribute='class' defaultTheme='dark' enableSystem>
-          {/* Sticky Navbar */}
-          <Navbar />
+          <ApiKeyProvider>
+            {/* Sticky Navbar */}
+            <Navbar />
 
-          {/* Main content -> padding top equal to navbar height */}
-          <main className='flex-1 container mx-auto px-4 py-4 pt-20'>
-            {children}
-          </main>
-          <Toaster />
-          {/* Footer always bottom */}
-          <Footer />
+            {/* Main content */}
+            <main className='flex-1 container mx-auto px-4 py-4 pt-20'>
+              {children}
+            </main>
+            <Toaster />
+            {/* Footer */}
+            <Footer />
+          </ApiKeyProvider>
         </ThemeProvider>
       </body>
     </html>

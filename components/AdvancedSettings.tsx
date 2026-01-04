@@ -17,14 +17,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Control } from "react-hook-form";
 import { one } from "../lib/utils";
 import { SelectField } from "./SelectField";
-import { CTA_STYLES, READING_LEVELS } from "../lib/constants";
+import { config } from "@/src/config";
 import { FormValues } from "../lib/schema";
 import { Settings, Tag } from "lucide-react";
 import { InfoIcon } from "./InfoIcon";
-
-const pastel = {
-  indigo: "#bfcaff",
-};
 
 type AdvancedField =
   | {
@@ -43,7 +39,7 @@ type AdvancedField =
       name: keyof FormValues;
       label: React.ReactNode;
       tooltip: string;
-      items: any[];
+      items: readonly string[];
     }
   | {
       kind: "input";
@@ -83,7 +79,7 @@ const getFields = (addHashtags: boolean): AdvancedField[] => [
     name: "hashtagLimit",
     label: (
       <>
-        <Tag size={16} color={pastel.indigo} />
+        <Tag size={16} className='text-indigo-400' />
         Hashtag Limit
       </>
     ),
@@ -99,14 +95,14 @@ const getFields = (addHashtags: boolean): AdvancedField[] => [
     name: "ctaStyle",
     label: <>CTA Style</>,
     tooltip: "Shape of your call-to-action.",
-    items: CTA_STYLES,
+    items: config.ui.ctaStyles,
   },
   {
     kind: "select",
     name: "readingLevel",
     label: <>Reading Level</>,
     tooltip: "Controls vocabulary complexity.",
-    items: READING_LEVELS,
+    items: config.ui.readingLevels,
   },
   {
     kind: "input",
@@ -139,18 +135,21 @@ export const AdvancedSettings: React.FC<{
   const fields = getFields(addHashtags);
 
   return (
-    <Accordion type='single' collapsible>
-      <AccordionItem value='advanced'>
-        <AccordionTrigger className='cursor-pointer flex items-center gap-2 text-base font-semibold group'>
+    <Accordion
+      type='single'
+      collapsible
+      className='mt-6 border-t border-neutral-800'
+    >
+      <AccordionItem value='advanced' className='border-b-0'>
+        <AccordionTrigger className='cursor-pointer flex items-center gap-2 text-sm font-semibold text-neutral-300 hover:text-white group py-4'>
           <Settings
-            size={20}
-            color={pastel.indigo}
-            className='group-hover:rotate-12 transition-transform'
+            size={18}
+            className='text-neutral-500 group-hover:rotate-45 transition-transform duration-300'
           />
-          Advanced Settings
+          <span className='flex-1 text-left'>Advanced Settings</span>
         </AccordionTrigger>
         <AccordionContent>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mt-4'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 pb-4'>
             {fields.map((f) => {
               const infoTip = <InfoIcon text={f.tooltip} />;
               if (f.kind === "slider") {
@@ -161,14 +160,14 @@ export const AdvancedSettings: React.FC<{
                     name={f.name}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className='flex items-center gap-1'>
+                        <FormLabel className='flex items-center gap-2 text-xs font-medium text-neutral-400'>
                           {f.label}
                           {infoTip}
                         </FormLabel>
                         <FormControl>
                           <div
                             className={
-                              `px-3 py-4 rounded-xl border border-indigo-100 bg-slate-50 dark:bg-neutral-800 transition-opacity` +
+                              `px-4 py-5 rounded-xl border border-neutral-800 bg-neutral-900/50 transition-opacity ` +
                               (f.getDisabled && f.getDisabled(addHashtags)
                                 ? " opacity-50 pointer-events-none"
                                 : "")
@@ -180,10 +179,10 @@ export const AdvancedSettings: React.FC<{
                               max={f.max}
                               step={f.step}
                               onValueChange={(v) => field.onChange(one(v))}
-                              className='accent-indigo-500'
+                              className='accent-blue-500'
                             />
                             {f.getValueLabel && (
-                              <p className='mt-2 text-xs text-muted-foreground'>
+                              <p className='mt-3 text-xs text-neutral-500 font-mono'>
                                 {f.getValueLabel(field.value)}
                               </p>
                             )}
@@ -201,7 +200,7 @@ export const AdvancedSettings: React.FC<{
                     control={control}
                     name={f.name}
                     label={
-                      <span className='flex items-center gap-1'>
+                      <span className='flex items-center gap-2 text-xs font-medium text-neutral-400'>
                         {f.label}
                         {infoTip}
                       </span>
@@ -218,14 +217,14 @@ export const AdvancedSettings: React.FC<{
                     name={f.name}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className='flex items-center gap-1'>
+                        <FormLabel className='flex items-center gap-2 text-xs font-medium text-neutral-400'>
                           {f.label}
                           {infoTip}
                         </FormLabel>
                         <FormControl>
                           <Input
                             type={f.inputType}
-                            inputMode={f.inputType}
+                            inputMode={f.inputType as any}
                             placeholder={f.placeholder}
                             value={field.value ?? ""}
                             onChange={(e) =>
@@ -237,7 +236,7 @@ export const AdvancedSettings: React.FC<{
                                   )
                                 : field.onChange(e.target.value)
                             }
-                            className='bg-slate-50 dark:bg-neutral-800 border border-indigo-100'
+                            className='bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-600 focus:ring-blue-500/50'
                           />
                         </FormControl>
                       </FormItem>
@@ -253,7 +252,7 @@ export const AdvancedSettings: React.FC<{
                     name={f.name}
                     render={({ field }) => (
                       <FormItem className={f.extraClass}>
-                        <FormLabel className='flex items-center gap-1'>
+                        <FormLabel className='flex items-center gap-2 text-xs font-medium text-neutral-400'>
                           {f.label}
                           {infoTip}
                         </FormLabel>
@@ -262,7 +261,7 @@ export const AdvancedSettings: React.FC<{
                             rows={4}
                             placeholder={f.placeholder}
                             {...field}
-                            className='bg-slate-50 dark:bg-neutral-800 border border-indigo-100'
+                            className='bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-600 focus:ring-blue-500/50 resize-none'
                           />
                         </FormControl>
                       </FormItem>

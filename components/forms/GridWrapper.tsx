@@ -1,26 +1,18 @@
 import React from "react";
+import { cn } from "@/lib/utils";
 
 /**
  * Responsive grid wrapper for form field layouts.
+ * Uses explicit classes to ensure Tailwind scans them.
  */
 export function GridWrapper({
-  colsMobile = 1,
-  colsSm,
-  colsMd,
-  colsLg,
-  gap = 6,
   children,
+  className,
 }: {
-  colsMobile?: number;
-  colsSm?: number;
-  colsMd?: number;
-  colsLg?: number;
-  gap?: number;
   children: React.ReactNode;
+  className?: string;
 }) {
-  let className = `grid grid-cols-${colsMobile} gap-${gap}`;
-  if (colsSm) className += ` sm:grid-cols-${colsSm}`;
-  if (colsMd) className += ` md:grid-cols-${colsMd}`;
-  if (colsLg) className += ` lg:grid-cols-${colsLg}`;
-  return <div className={className}>{children}</div>;
+  return (
+    <div className={cn("grid grid-cols-1 gap-6", className)}>{children}</div>
+  );
 }

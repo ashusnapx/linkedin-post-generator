@@ -1,9 +1,11 @@
-import MainComponent from "@/components/MainComponent";
+import { Hero } from "@/components/Hero";
+import { Generator } from "@/components/Generator";
 
 export default function Home() {
   return (
-    <div className='p-2'>
-      <MainComponent/>
+    <div className='min-h-screen'>
+      <Hero />
+      <Generator />
     </div>
   );
 }

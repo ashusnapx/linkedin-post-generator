@@ -15,7 +15,7 @@ import { GridWrapper } from "./GridWrapper";
  */
 export function InputFields({ fields, control }: any) {
   return (
-    <GridWrapper colsMobile={1} colsSm={2} gap={4}>
+    <GridWrapper className='grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8'>
       {fields.map(({ name, label, icon, placeholder, required, tooltip }) => (
         <FormField
           key={name}
@@ -23,7 +23,7 @@ export function InputFields({ fields, control }: any) {
           name={name}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='text-base font-medium flex items-center gap-2'>
+              <FormLabel className='text-sm font-medium text-neutral-300 flex items-center gap-2 mb-1.5'>
                 {icon}
                 <span>{label}</span>
                 {required && <span className='text-red-400'>*</span>}
@@ -34,7 +34,7 @@ export function InputFields({ fields, control }: any) {
                   placeholder={placeholder}
                   required={required}
                   {...field}
-                  className='bg-slate-100 dark:bg-neutral-800 border-none'
+                  className='bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:ring-blue-500/50'
                 />
               </FormControl>
               <FormMessage />

@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { LucideInfo } from "lucide-react";
+import { Info } from "lucide-react";
 
 interface InfoIconProps {
   text: string;
@@ -15,12 +15,12 @@ interface InfoIconProps {
 /** Small tooltip-wrapped info icon used across form labels. */
 export const InfoIcon: React.FC<InfoIconProps> = ({ text }) => (
   <TooltipProvider>
-    <Tooltip>
+    <Tooltip delayDuration={300}>
       <TooltipTrigger asChild>
-        <LucideInfo className='inline w-4 h-4 ml-1 text-muted-foreground cursor-pointer' />
+        <Info className='inline w-4 h-4 ml-1.5 text-neutral-500 hover:text-neutral-300 transition-colors cursor-help' />
       </TooltipTrigger>
-      <TooltipContent>
-        <p className='text-sm'>{text}</p>
+      <TooltipContent className='bg-neutral-900 border-neutral-800 text-neutral-300 text-xs px-3 py-2 max-w-[200px]'>
+        <p>{text}</p>
       </TooltipContent>
     </Tooltip>
   </TooltipProvider>

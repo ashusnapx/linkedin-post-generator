@@ -2,26 +2,23 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { motion, MotionConfig, useReducedMotion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Key, Check, ExternalLink } from "lucide-react";
 import { ModeToggle } from "./ModeToggle";
+import { Button } from "@/components/ui/button";
+import { useApiKey } from "@/src/context/ApiKeyContext";
+import { ApiKeyModal } from "@/components/ApiKeyModal";
+import { config } from "@/src/config";
 import Link from "next/link";
 
-type NavItem = { label: string; href: string };
-
-const navItems: NavItem[] = [
-  { label: "Home", href: "/" },
-  { label: "Features", href: "#features" },
-  { label: "Demo", href: "#demo" },
-  { label: "GitHub", href: "https://github.com/ashusnapx" },
-];
-
 const Navbar = (): React.JSX.Element => {
+  const { isKeySet, clearApiKey } = useApiKey();
   const [isOpen, setIsOpen] = useState(false);
+  const [showKeyModal, setShowKeyModal] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const menuRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  // Close on Esc and click outside when open; restore focus to toggle
+  // Close on Esc and click outside when open
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
@@ -53,10 +50,10 @@ const Navbar = (): React.JSX.Element => {
     <MotionConfig reducedMotion='user'>
       {/* Skip link */}
       <a
-        href='#main'
-        className='sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z- focus:px-3 focus:py-2 focus:rounded-md focus:bg-indigo-600 focus:text-white'
+        href='#generator'
+        className='sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-3 focus:py-2 focus:rounded-md focus:bg-indigo-600 focus:text-white'
       >
-        Skip to main content
+        Skip to generator
       </a>
 
       <motion.nav
@@ -68,40 +65,63 @@ const Navbar = (): React.JSX.Element => {
           duration: shouldReduceMotion ? 0.2 : 0.5,
           ease: "easeOut",
         }}
-        className='fixed top-0 left-0 w-full z-50 border-b border-gray-200 dark:border-gray-800
-                   bg-white/70 dark:bg-gray-900/70 backdrop-blur-md'
+        className='fixed top-0 left-0 w-full z-50 border-b border-neutral-800
+                   bg-neutral-950/80 backdrop-blur-xl'
         role='navigation'
         aria-label='Primary'
       >
-        <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex items-center justify-between h-16'>
             {/* Logo */}
             <Link
               href='/'
-              className='text-3xl font-bold tracking-tight focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900 rounded'
+              className='text-2xl font-bold tracking-tight focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded'
             >
-              <span className='bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent'>
-                PostGen
-                <sup className='bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent'>
-                  ©
-                </sup>
+              <span className='bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent'>
+                {config.ui.brand.name}
               </span>
             </Link>
 
             {/* Desktop Nav */}
-            <div className='hidden md:flex items-center gap-6'>
-              <ul className='flex items-center gap-6' aria-label='Primary'>
-                {navItems.map((item) => (
-                  <li key={item.label}>
-                    <a
-                      href={item.href}
-                      className='text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900 rounded px-1 py-1'
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            <div className='hidden md:flex items-center gap-4'>
+              {/* API Key Status */}
+              {isKeySet ? (
+                <div className='flex items-center gap-2'>
+                  <span className='flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 border border-green-500/30 rounded-full text-xs text-green-400'>
+                    <Check className='w-3.5 h-3.5' />
+                    API Connected
+                  </span>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={clearApiKey}
+                    className='text-xs text-neutral-500 hover:text-neutral-300'
+                  >
+                    Disconnect
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() => setShowKeyModal(true)}
+                  className='border-neutral-700 hover:border-blue-500 text-neutral-300'
+                >
+                  <Key className='w-4 h-4 mr-2' />
+                  Connect API Key
+                </Button>
+              )}
+
+              <a
+                href={config.social.github}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='flex items-center gap-1 text-sm text-neutral-400 hover:text-white transition-colors'
+              >
+                GitHub
+                <ExternalLink className='w-3.5 h-3.5' />
+              </a>
+
               <ModeToggle />
             </div>
 
@@ -115,7 +135,7 @@ const Navbar = (): React.JSX.Element => {
                 aria-expanded={isOpen}
                 aria-label={isOpen ? "Close menu" : "Open menu"}
                 onClick={() => setIsOpen((v) => !v)}
-                className='p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900'
+                className='p-2 rounded-md text-neutral-400 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500'
               >
                 {isOpen ? <X size={22} /> : <Menu size={22} />}
               </button>
@@ -141,25 +161,63 @@ const Navbar = (): React.JSX.Element => {
             duration: shouldReduceMotion ? 0.15 : 0.3,
             ease: "easeOut",
           }}
-          className='md:hidden bg-white/95 dark:bg-gray-900/95 border-t border-gray-200 dark:border-gray-800 px-4 pb-4'
+          className='md:hidden bg-neutral-950/95 border-t border-neutral-800 px-4 pb-4 overflow-hidden'
           role='region'
           aria-label='Mobile menu'
         >
-          <ul className='flex flex-col gap-2 mt-3'>
-            {navItems.map((item) => (
-              <li key={item.label}>
-                <a
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className='block rounded px-3 py-2 text-sm font-medium text-gray-800 dark:text-gray-200 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:text-indigo-300 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500'
+          <div className='flex flex-col gap-3 mt-4'>
+            {/* API Key Status Mobile */}
+            {isKeySet ? (
+              <div className='flex items-center justify-between p-3 bg-green-500/10 border border-green-500/30 rounded-lg'>
+                <span className='flex items-center gap-2 text-sm text-green-400'>
+                  <Check className='w-4 h-4' />
+                  API Connected
+                </span>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => {
+                    clearApiKey();
+                    setIsOpen(false);
+                  }}
+                  className='text-xs text-neutral-500'
                 >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+                  Disconnect
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant='outline'
+                onClick={() => {
+                  setShowKeyModal(true);
+                  setIsOpen(false);
+                }}
+                className='w-full border-neutral-700'
+              >
+                <Key className='w-4 h-4 mr-2' />
+                Connect API Key
+              </Button>
+            )}
+
+            <a
+              href={config.social.github}
+              target='_blank'
+              rel='noopener noreferrer'
+              onClick={() => setIsOpen(false)}
+              className='flex items-center gap-2 p-3 text-sm text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800'
+            >
+              GitHub
+              <ExternalLink className='w-4 h-4' />
+            </a>
+          </div>
         </motion.div>
       </motion.nav>
+
+      {/* API Key Modal */}
+      <ApiKeyModal
+        isOpen={showKeyModal}
+        onClose={() => setShowKeyModal(false)}
+      />
     </MotionConfig>
   );
 };

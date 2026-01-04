@@ -42,7 +42,7 @@ export function SelectField<T extends string>({
       name={name as any}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>
+          <FormLabel className='text-sm font-medium text-neutral-300 flex items-center gap-2 mb-1.5'>
             {label} {tooltip && <InfoIcon text={tooltip} />}
           </FormLabel>
           <Select
@@ -50,13 +50,17 @@ export function SelectField<T extends string>({
             defaultValue={field.value as string}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className='bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500 focus:ring-blue-500/50'>
                 <SelectValue placeholder='Select' />
               </SelectTrigger>
             </FormControl>
-            <SelectContent>
+            <SelectContent className='bg-neutral-900 border-neutral-800 text-neutral-300'>
               {items.map((opt) => (
-                <SelectItem key={opt} value={opt}>
+                <SelectItem
+                  key={opt}
+                  value={opt}
+                  className='focus:bg-neutral-800 focus:text-white'
+                >
                   {opt}
                 </SelectItem>
               ))}
