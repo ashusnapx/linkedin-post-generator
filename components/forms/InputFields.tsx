@@ -10,10 +10,28 @@ import { Input } from "@/components/ui/input";
 import { InfoIcon } from "../InfoIcon";
 import { GridWrapper } from "./GridWrapper";
 
+import { Control } from "react-hook-form";
+import { FormValues } from "../../lib/schema";
+
+interface InputFieldConfig {
+  name: keyof FormValues;
+  label: string;
+  icon?: React.ReactNode;
+  placeholder?: string;
+  required?: boolean;
+  tooltip?: string;
+}
+
 /**
  * Renders a group of text input fields.
  */
-export function InputFields({ fields, control }: any) {
+export function InputFields({
+  fields,
+  control,
+}: {
+  fields: InputFieldConfig[];
+  control: Control<FormValues>;
+}) {
   return (
     <GridWrapper className='grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8'>
       {fields.map(({ name, label, icon, placeholder, required, tooltip }) => (

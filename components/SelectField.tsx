@@ -21,7 +21,7 @@ import { InfoIcon } from "./InfoIcon";
 interface SelectFieldProps<T extends string> {
   control: Control<FormValues>;
   name: keyof FormValues;
-  label: string;
+  label: React.ReactNode;
   items: readonly T[];
   tooltip?: string;
 }
@@ -37,9 +37,10 @@ export function SelectField<T extends string>({
   tooltip,
 }: SelectFieldProps<T>) {
   return (
+  return (
     <FormField
-      control={control as any}
-      name={name as any}
+      control={control}
+      name={name}
       render={({ field }) => (
         <FormItem>
           <FormLabel className='text-sm font-medium text-neutral-300 flex items-center gap-2 mb-1.5'>

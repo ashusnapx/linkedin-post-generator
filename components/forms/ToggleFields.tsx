@@ -3,10 +3,27 @@ import { ToggleItem } from "../ToggleItem";
 import { InfoIcon } from "../InfoIcon";
 import { GridWrapper } from "./GridWrapper";
 
+import { Control } from "react-hook-form";
+import { FormValues } from "../../lib/schema";
+
+interface ToggleFieldConfig {
+  name: keyof FormValues;
+  label: string;
+  desc?: string;
+  icon?: React.ReactNode;
+  tooltip?: string;
+}
+
 /**
  * Renders a group of toggle switches.
  */
-export function ToggleFields({ fields, control }: any) {
+export function ToggleFields({
+  fields,
+  control,
+}: {
+  fields: ToggleFieldConfig[];
+  control: Control<FormValues>;
+}) {
   return (
     <GridWrapper className='grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6'>
       {fields.map(({ name, label, desc, icon, tooltip }) => (

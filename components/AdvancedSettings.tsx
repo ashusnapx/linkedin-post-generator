@@ -32,7 +32,7 @@ type AdvancedField =
       max: number;
       step: number;
       getDisabled?: (addHashtags: boolean) => boolean;
-      getValueLabel?: (value: any) => string;
+      getValueLabel?: (value: number) => string;
     }
   | {
       kind: "select";
@@ -49,9 +49,9 @@ type AdvancedField =
       inputType: string;
       placeholder?: string;
       onValueChange?: (
-        v: any,
+        v: React.ChangeEvent<HTMLInputElement>,
         setSeedValue: (v?: number) => void,
-        onChange: (v: any) => void
+        onChange: (v: number | undefined) => void
       ) => void;
     }
   | {
@@ -224,7 +224,9 @@ export const AdvancedSettings: React.FC<{
                         <FormControl>
                           <Input
                             type={f.inputType}
-                            inputMode={f.inputType as any}
+                            inputMode={
+                              f.inputType === "number" ? "numeric" : "text"
+                            }
                             placeholder={f.placeholder}
                             value={field.value ?? ""}
                             onChange={(e) =>
